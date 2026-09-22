@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Render Keep-Alive — Keep Your Free Services Running",
+  title: "Render Alive — Keep Your Free Services Running",
   description:
     "Automatically ping your Render free web services to prevent them from spinning down. No installation required.",
 };

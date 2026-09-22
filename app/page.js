@@ -213,7 +213,7 @@ export default function Home() {
   return (
     <main className="container">
       <header className="header">
-        <h1 className="header__title">Keep-Alive</h1>
+        <h1 className="header__title">Render Alive</h1>
         <p className="header__description">
           Ping your Render free-tier services to prevent spin-down.
           Add a URL, set the interval, start monitoring.
