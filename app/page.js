@@ -294,11 +294,18 @@ export default function Home() {
         )}
       </section>
 
-      <footer className="footer">
+      <footer className="footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "20px" }}>
         <p className="footer__text">
           Data stored via browser cookie. Clearing cookies or switching devices
           will reset your configuration.
         </p>
+        <a
+          href="/admin"
+          className="footer__text"
+          style={{ textDecoration: "none", color: "var(--text-muted)", fontSize: "11px", whiteSpace: "nowrap" }}
+        >
+          Admin →
+        </a>
       </footer>
 
       {deletingService && (

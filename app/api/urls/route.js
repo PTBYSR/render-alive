@@ -265,10 +265,11 @@ export async function POST(request) {
     lastLatency: String(checkResult.latencyMs),
   };
 
-  // Pipeline: create hash + add to user set + add to due_pings sorted set
+  // Pipeline: create hash + add to user set + add to due_pings sorted set + index user
   const pipeline = redis.pipeline();
   pipeline.hset(`svc:${serviceId}`, service);
   pipeline.sadd(`user:${userId}:urls`, serviceId);
+  pipeline.sadd("all_users", userId);
   pipeline.zadd("due_pings", { score: nextPingAt, member: serviceId });
   await pipeline.exec();
 
@@ -303,6 +304,11 @@ export async function DELETE(request) {
   pipeline.srem(`user:${userId}:urls`, serviceId);
   pipeline.zrem("due_pings", serviceId);
   await pipeline.exec();
+
+  const remaining = await redis.scard(`user:${userId}:urls`);
+  if (remaining === 0) {
+    await redis.srem("all_users", userId);
+  }
 
   return NextResponse.json({ ok: true });
 }
