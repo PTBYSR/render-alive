@@ -280,9 +280,33 @@ export default function Home() {
 
   return (
     <main className="container">
-      <header className="header">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
-          <h1 className="header__title" style={{ margin: 0 }}>Render Alive</h1>
+      {/* Top Minimal Navigation */}
+      <nav className="top-nav">
+        <div className="top-nav__brand">
+          <span className="top-nav__logo">Render Alive</span>
+          <span className="top-nav__status">
+            <span className="top-nav__status-dot" />
+            LIVE
+          </span>
+        </div>
+
+        <div className="top-nav__links">
+          <a href="#console" className="top-nav__link">
+            Console
+          </a>
+          <a
+            href="https://x.com/ptbthefirst"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="top-nav__link"
+            title="Follow Creator on X"
+          >
+            <span>@ptbthefirst</span>
+            <span style={{ fontSize: "10px", opacity: 0.6 }}>↗</span>
+          </a>
+          <a href="/admin" className="top-nav__link">
+            Admin
+          </a>
           <div className="auth-nav">
             {session?.user ? (
               <div className="auth-nav__user">
@@ -344,11 +368,66 @@ export default function Home() {
             )}
           </div>
         </div>
-        <p className="header__description">
-          Ping your Render free-tier services to prevent spin-down.
-          Add a URL, set the interval, start monitoring.
+      </nav>
+
+      {/* One-Header Minimal Landing Page */}
+      <section className="landing-hero">
+        <div className="landing-hero__badge">// ZERO COLD STARTS • 24/7 UPTIME</div>
+        <h1 className="landing-hero__title">
+          Keep your free Render web services awake.
+        </h1>
+        <p className="landing-hero__subtitle">
+          Automated, zero-latency edge pings powered by Upstash Redis and Vercel Cron.
+          Stop waiting 50+ seconds for inactive instances to spin up.
         </p>
-      </header>
+        <div className="landing-hero__actions">
+          <a
+            href="#console"
+            className="btn"
+            style={{ padding: "9px 18px", textDecoration: "none", display: "inline-flex", alignItems: "center" }}
+          >
+            Start Monitoring ↓
+          </a>
+          <a
+            href="https://x.com/ptbthefirst"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn--secondary"
+            style={{
+              padding: "9px 16px",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <span>Follow @ptbthefirst</span>
+            <span style={{ fontSize: "11px" }}>↗</span>
+          </a>
+        </div>
+        <div className="landing-hero__metrics">
+          <div className="landing-hero__metric">
+            <span className="landing-hero__metric-value">0s</span>
+            <span className="landing-hero__metric-label">Cold-start lag</span>
+          </div>
+          <div className="landing-hero__metric">
+            <span className="landing-hero__metric-value">3</span>
+            <span className="landing-hero__metric-label">Free monitor slots</span>
+          </div>
+          <div className="landing-hero__metric">
+            <span className="landing-hero__metric-value">1-Min</span>
+            <span className="landing-hero__metric-label">Cron resolution</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Service Monitoring Console */}
+      <div id="console" className="console-header">
+        <h2 className="console-header__title">Active Service Monitor</h2>
+        <span className="console-header__slots">
+          {services.length} / 3 slots used
+        </span>
+      </div>
 
       <form className="form" onSubmit={handleAdd} id="add-service-form">
         {error && <div className="message message--error">{error}</div>}
@@ -627,6 +706,24 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Minimal Footer */}
+      <footer className="footer">
+        <span className="footer__text">
+          Render Alive • 24/7 Keep-Alive Daemon
+        </span>
+        <span className="footer__text">
+          Built by{" "}
+          <a
+            href="https://x.com/ptbthefirst"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer__author-link"
+          >
+            @ptbthefirst
+          </a>
+        </span>
+      </footer>
     </main>
   );
 }
