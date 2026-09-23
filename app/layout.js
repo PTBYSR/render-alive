@@ -14,6 +14,14 @@ export const metadata = {
     siteName: "Render Alive",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Render Alive — 24/7 Keep-Alive Daemon",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -21,6 +29,7 @@ export const metadata = {
     description:
       "Automated, zero-latency edge pings to keep your Render free-tier web services awake 24/7. Never wait 50s for cold starts again.",
     creator: "@ptbthefirst",
+    images: ["/og-image.png"],
   },
 };
 
