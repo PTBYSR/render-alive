@@ -377,7 +377,7 @@ export default function Home() {
           Keep your free Render web services awake.
         </h1>
         <p className="landing-hero__subtitle">
-          Automated, zero-latency edge pings powered by Upstash Redis and Vercel Cron.
+          Automated, zero-latency edge pings powered by Upstash Redis and 24/7 keep-alive scheduling.
           Stop waiting 50+ seconds for inactive instances to spin up.
         </p>
         <div className="landing-hero__actions">

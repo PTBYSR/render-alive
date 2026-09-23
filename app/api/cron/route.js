@@ -5,7 +5,7 @@ import redis from "@/lib/redis";
  * GET /api/cron — Ping all due URLs
  *
  * Protected by CRON_SECRET via:
- *  - Authorization: Bearer <secret> header (Vercel Cron)
+ *  - Authorization: Bearer <secret> header
  *  - ?secret=<secret> query param (external cron services)
  */
 export async function GET(request) {
