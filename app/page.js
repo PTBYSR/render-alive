@@ -316,9 +316,6 @@ export default function Home() {
             <span>@ptbthefirst</span>
             <span style={{ fontSize: "10px", opacity: 0.6 }}>↗</span>
           </a>
-          <a href="/admin" className="top-nav__link">
-            Admin
-          </a>
           <div className="auth-nav">
             {session?.user ? (
               <div className="auth-nav__user">

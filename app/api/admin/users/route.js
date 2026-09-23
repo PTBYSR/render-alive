@@ -2,37 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import redis from "@/lib/redis";
 
-const ADMIN_COOKIE = "admin_session";
-
-function getExpectedSecret() {
-  return (
-    process.env.ADMIN_SECRET ||
-    process.env.CRON_SECRET ||
-    "render-admin-secret-2026"
-  );
-}
-
-async function isAuthorized(request) {
-  const cookieStore = await cookies();
-  const session = cookieStore.get(ADMIN_COOKIE)?.value;
-  const expected = getExpectedSecret().trim();
-
-  if (session && session.trim() === expected) {
-    return true;
-  }
-
-  const authHeader = request.headers.get("authorization");
-  if (authHeader?.startsWith("Bearer ") && authHeader.slice(7).trim() === expected) {
-    return true;
-  }
-
-  const { searchParams } = new URL(request.url);
-  if (searchParams.get("key")?.trim() === expected) {
-    return true;
-  }
-
-  return false;
-}
+import { isAuthorizedAdmin } from "@/lib/adminAuth";
 
 /**
  * Ensure existing users are indexed into "all_users" set
@@ -63,7 +33,7 @@ async function syncAllUsers() {
  * GET /api/admin/users — List all users or view single user if ?id= is given
  */
 export async function GET(request) {
-  if (!(await isAuthorized(request))) {
+  if (!(await isAuthorizedAdmin(request))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
