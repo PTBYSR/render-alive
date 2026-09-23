@@ -60,6 +60,36 @@ export default function Home() {
   const [authError, setAuthError] = useState("");
   const [submittingAuth, setSubmittingAuth] = useState(false);
 
+  const [showSignInTooltip, setShowSignInTooltip] = useState(false);
+  const [highlightSignIn, setHighlightSignIn] = useState(false);
+
+  useEffect(() => {
+    if (session?.user) {
+      setShowSignInTooltip(false);
+      setHighlightSignIn(false);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setShowSignInTooltip(true);
+      setHighlightSignIn(true);
+
+      const highlightTimer = setTimeout(() => {
+        setHighlightSignIn(false);
+      }, 2500);
+
+      const tooltipTimer = setTimeout(() => {
+        setShowSignInTooltip(false);
+      }, 7000);
+
+      return () => {
+        clearTimeout(highlightTimer);
+        clearTimeout(tooltipTimer);
+      };
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [session]);
+
   const fetchServices = useCallback(async () => {
     try {
       const res = await fetch("/api/urls");
@@ -274,14 +304,43 @@ export default function Home() {
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                className="btn--text"
-                onClick={() => setShowAuthModal(true)}
-                style={{ padding: "4px 8px", fontSize: "11px" }}
-              >
-                Sign In →
-              </button>
+              <div className="auth-nav__prompt-container">
+                <button
+                  type="button"
+                  className={`btn--text ${highlightSignIn ? "btn--signin-highlight" : ""}`}
+                  onClick={() => {
+                    setShowAuthModal(true);
+                    setShowSignInTooltip(false);
+                  }}
+                  style={{ padding: "4px 8px", fontSize: "11px" }}
+                >
+                  Sign In →
+                </button>
+                {showSignInTooltip && (
+                  <div
+                    className="signin-tooltip"
+                    onClick={() => {
+                      setShowAuthModal(true);
+                      setShowSignInTooltip(false);
+                    }}
+                  >
+                    <div className="signin-tooltip__arrow" />
+                    <div className="signin-tooltip__content">
+                      <span>Create an account to save your services</span>
+                      <button
+                        type="button"
+                        className="signin-tooltip__close"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowSignInTooltip(false);
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

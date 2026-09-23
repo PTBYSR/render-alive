@@ -903,6 +903,90 @@ button {
   padding: 0 10px;
 }
 
+/* ===== SIGN IN ANIMATED PROMPT & TOOLTIP ===== */
+.auth-nav__prompt-container {
+  position: relative;
+  display: inline-block;
+}
+
+.btn--signin-highlight {
+  color: var(--black) !important;
+  font-weight: 600 !important;
+  animation: pulseHighlight 1.2s ease-in-out 2 alternate;
+}
+
+@keyframes pulseHighlight {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 1;
+    color: var(--black);
+  }
+}
+
+.signin-tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 100;
+  background: var(--black);
+  color: var(--white);
+  padding: 8px 12px;
+  font-size: 11px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  cursor: pointer;
+  animation: tooltipEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  display: flex;
+  align-items: center;
+}
+
+@keyframes tooltipEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.signin-tooltip__arrow {
+  position: absolute;
+  top: -5px;
+  right: 18px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid var(--black);
+}
+
+.signin-tooltip__content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.signin-tooltip__close {
+  background: transparent;
+  border: none;
+  color: var(--gray-400);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+
+.signin-tooltip__close:hover {
+  color: var(--white);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
   .container {
