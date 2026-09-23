@@ -297,6 +297,16 @@ export default function Home() {
             </a>
           )}
           <a
+            href="https://github.com/PTBYSR/render-alive"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="top-nav__link"
+            title="Star on GitHub"
+          >
+            <span>GitHub</span>
+            <span style={{ fontSize: "10px", opacity: 0.6 }}>↗</span>
+          </a>
+          <a
             href="https://x.com/ptbthefirst"
             target="_blank"
             rel="noopener noreferrer"
@@ -393,6 +403,22 @@ export default function Home() {
             >
               Start Monitoring →
             </button>
+            <a
+              href="https://github.com/PTBYSR/render-alive"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--secondary"
+              style={{
+                padding: "9px 16px",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <span>GitHub ⭐️</span>
+              <span style={{ fontSize: "11px" }}>↗</span>
+            </a>
             <a
               href="https://x.com/ptbthefirst"
               target="_blank"
@@ -738,7 +764,15 @@ export default function Home() {
       {/* Minimal Footer */}
       <footer className="footer">
         <span className="footer__text">
-          Render Alive • 24/7 Keep-Alive Daemon
+          Render Alive • 24/7 Keep-Alive Daemon •{" "}
+          <a
+            href="https://github.com/PTBYSR/render-alive"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="footer__author-link"
+          >
+            GitHub
+          </a>
         </span>
         <span className="footer__text">
           Built by{" "}
