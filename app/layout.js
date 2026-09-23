@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Providers } from "./providers";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "Render Alive — Keep Your Free Services Running 24/7",
@@ -50,6 +51,7 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
