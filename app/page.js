@@ -403,38 +403,6 @@ export default function Home() {
             >
               Start Monitoring →
             </button>
-            <a
-              href="https://github.com/PTBYSR/render-alive"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn--secondary"
-              style={{
-                padding: "9px 16px",
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <span>GitHub ⭐️</span>
-              <span style={{ fontSize: "11px" }}>↗</span>
-            </a>
-            <a
-              href="https://x.com/ptbthefirst"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn--secondary"
-              style={{
-                padding: "9px 16px",
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <span>Follow @ptbthefirst</span>
-              <span style={{ fontSize: "11px" }}>↗</span>
-            </a>
           </div>
           <div className="landing-hero__metrics">
             <div className="landing-hero__metric">
