@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Providers } from "./providers";
 
 export const metadata = {
   title: "Render Alive — Keep Your Free Services Running",
@@ -21,7 +22,9 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

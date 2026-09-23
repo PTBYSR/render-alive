@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const INTERVAL_OPTIONS = [
   { value: 300, label: "5 min" },
@@ -52,6 +53,13 @@ export default function Home() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const { data: session } = useSession();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [submittingAuth, setSubmittingAuth] = useState(false);
+
   const fetchServices = useCallback(async () => {
     try {
       const res = await fetch("/api/urls");
@@ -70,7 +78,36 @@ export default function Home() {
     fetchServices();
     const id = window.setInterval(fetchServices, 30000);
     return () => window.clearInterval(id);
-  }, [fetchServices]);
+  }, [fetchServices, session]);
+
+  const handleEmailAuth = async (e) => {
+    e.preventDefault();
+    setAuthError("");
+    setSubmittingAuth(true);
+    try {
+      const res = await signIn("credentials", {
+        email: authEmail,
+        password: authPassword,
+        redirect: false,
+      });
+      if (res?.error) {
+        setAuthError("Invalid credentials or error signing in.");
+      } else {
+        setShowAuthModal(false);
+        setAuthEmail("");
+        setAuthPassword("");
+        fetchServices();
+      }
+    } catch {
+      setAuthError("An error occurred during authentication.");
+    } finally {
+      setSubmittingAuth(false);
+    }
+  };
+
+  const handleGoogleAuth = () => {
+    signIn("google");
+  };
 
   useEffect(() => {
     if (error || success) {
@@ -122,11 +159,12 @@ export default function Home() {
       if (e.key === "Escape") {
         if (deletingService && !isDeleting) setDeletingService(null);
         if (pendingIntervalChange && !isUpdatingInterval) setPendingIntervalChange(null);
+        if (showAuthModal && !submittingAuth) setShowAuthModal(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [deletingService, isDeleting, pendingIntervalChange, isUpdatingInterval]);
+  }, [deletingService, isDeleting, pendingIntervalChange, isUpdatingInterval, showAuthModal, submittingAuth]);
 
   const confirmDelete = async () => {
     if (!deletingService) return;
@@ -213,7 +251,40 @@ export default function Home() {
   return (
     <main className="container">
       <header className="header">
-        <h1 className="header__title">Render Alive</h1>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
+          <h1 className="header__title" style={{ margin: 0 }}>Render Alive</h1>
+          <div className="auth-nav">
+            {session?.user ? (
+              <div className="auth-nav__user">
+                <span className="auth-nav__avatar">
+                  {session.user.image ? (
+                    <img src={session.user.image} alt={session.user.name || "User"} />
+                  ) : (
+                    (session.user.name || session.user.email || "U")[0].toUpperCase()
+                  )}
+                </span>
+                <span>{session.user.name || session.user.email}</span>
+                <button
+                  type="button"
+                  className="btn--text"
+                  onClick={() => signOut()}
+                  style={{ padding: "4px 8px", fontSize: "11px" }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="btn--text"
+                onClick={() => setShowAuthModal(true)}
+                style={{ padding: "4px 8px", fontSize: "11px" }}
+              >
+                Sign In →
+              </button>
+            )}
+          </div>
+        </div>
         <p className="header__description">
           Ping your Render free-tier services to prevent spin-down.
           Add a URL, set the interval, start monitoring.
@@ -402,6 +473,98 @@ export default function Home() {
                 {isUpdatingInterval ? "Updating…" : "Update Interval"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {showAuthModal && (
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !submittingAuth) {
+              setShowAuthModal(false);
+            }
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="auth-modal-title"
+        >
+          <div className="modal" style={{ maxWidth: "380px" }}>
+            <h2 id="auth-modal-title" className="modal__title" style={{ marginBottom: "6px" }}>
+              Sign In to Render Alive
+            </h2>
+            <p className="modal__description" style={{ marginBottom: "20px" }}>
+              Save and sync your monitored services across devices.
+            </p>
+
+            {authError && <div className="message message--error">{authError}</div>}
+
+            <button
+              type="button"
+              className="btn--google"
+              onClick={handleGoogleAuth}
+              disabled={submittingAuth}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+
+            <div className="auth-divider">
+              <span>or email</span>
+            </div>
+
+            <form onSubmit={handleEmailAuth}>
+              <div className="form__group" style={{ marginBottom: "14px" }}>
+                <label className="form__label" htmlFor="auth-email">Email</label>
+                <input
+                  id="auth-email"
+                  type="email"
+                  className="form__input"
+                  placeholder="developer@example.com"
+                  value={authEmail}
+                  onChange={(e) => setAuthEmail(e.target.value)}
+                  disabled={submittingAuth}
+                  required
+                />
+              </div>
+
+              <div className="form__group" style={{ marginBottom: "20px" }}>
+                <label className="form__label" htmlFor="auth-password">Password</label>
+                <input
+                  id="auth-password"
+                  type="password"
+                  className="form__input"
+                  placeholder="••••••••••••"
+                  value={authPassword}
+                  onChange={(e) => setAuthPassword(e.target.value)}
+                  disabled={submittingAuth}
+                  required
+                />
+              </div>
+
+              <div className="modal__actions">
+                <button
+                  type="button"
+                  className="btn btn--secondary"
+                  onClick={() => setShowAuthModal(false)}
+                  disabled={submittingAuth}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="btn"
+                  disabled={submittingAuth || !authEmail || !authPassword}
+                >
+                  {submittingAuth ? "Signing in…" : "Sign In / Register"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
