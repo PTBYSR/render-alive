@@ -2,9 +2,26 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata = {
-  title: "Render Alive — Keep Your Free Services Running",
+  title: "Render Alive — Keep Your Free Services Running 24/7",
   description:
-    "Automatically ping your Render free web services to prevent them from spinning down. No installation required.",
+    "Automated, zero-latency edge pings to keep your Render free-tier web services awake 24/7. No cold starts, zero installation required.",
+  metadataBase: new URL("https://render-alive-4xb9.vercel.app"),
+  openGraph: {
+    title: "Render Alive — Keep Your Free Services Running 24/7",
+    description:
+      "Automated, zero-latency edge pings to keep your Render free-tier web services awake 24/7. No cold starts, zero installation required.",
+    url: "https://render-alive-4xb9.vercel.app",
+    siteName: "Render Alive",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Render Alive — Keep Your Free Services Running 24/7",
+    description:
+      "Automated, zero-latency edge pings to keep your Render free-tier web services awake 24/7. Never wait 50s for cold starts again.",
+    creator: "@ptbthefirst",
+  },
 };
 
 export default function RootLayout({ children }) {
