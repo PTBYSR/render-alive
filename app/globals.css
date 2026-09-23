@@ -1154,18 +1154,154 @@ button {
   color: var(--white);
 }
 
+/* ===== AUTH GATE (LOCKED CONSOLE) ===== */
+.auth-gate {
+  border: 1px solid var(--border);
+  background: var(--bg-hover);
+  padding: 40px 28px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.auth-gate__badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.auth-gate__title {
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.auth-gate__description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.65;
+  max-width: 480px;
+  margin: 0 auto 24px;
+}
+
+.auth-gate__actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.auth-gate__actions .btn {
+  padding: 10px 22px;
+  font-size: 13px;
+}
+
+.auth-gate__features {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border-light);
+  padding-top: 18px;
+}
+
+.auth-gate__feature {
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
   .container {
-    padding: 48px 20px 80px;
+    padding: 24px 16px 64px;
   }
 
-  .header {
-    margin-bottom: 48px;
+  .top-nav {
+    margin-bottom: 36px;
+    padding-bottom: 16px;
+    gap: 12px;
+  }
+
+  .top-nav__links {
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .top-nav__link {
+    font-size: 11px;
+  }
+
+  .landing-hero {
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+  }
+
+  .landing-hero__title {
+    font-size: 24px;
+    line-height: 1.22;
+    margin-bottom: 12px;
+  }
+
+  .landing-hero__subtitle {
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .landing-hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .landing-hero__actions .btn,
+  .landing-hero__actions .btn--secondary {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    padding: 11px 16px;
+  }
+
+  .landing-hero__metrics {
+    padding: 12px 14px;
+    gap: 8px;
+  }
+
+  .landing-hero__metric-value {
+    font-size: 15px;
+  }
+
+  .landing-hero__metric-label {
+    font-size: 10px;
+  }
+
+  .auth-gate {
+    padding: 28px 16px;
+  }
+
+  .auth-gate__title {
+    font-size: 17px;
+  }
+
+  .auth-gate__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .auth-gate__features {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
   }
 
   .form {
-    margin-bottom: 48px;
+    margin-bottom: 40px;
   }
 
   .form__row {
@@ -1178,7 +1314,46 @@ button {
     width: 100%;
   }
 
+  .service {
+    padding: 16px 14px;
+  }
+
+  .service__url {
+    word-break: break-all;
+    font-size: 12px;
+  }
+
   .service__meta {
-    gap: 20px;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .service__actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .modal {
+    width: calc(100% - 24px);
+    max-width: 380px;
+    padding: 24px 18px;
+    margin: 0 auto;
+  }
+
+  .signin-tooltip {
+    right: -8px;
+    max-width: 250px;
+    font-size: 11px;
+  }
+
+  .signin-tooltip__arrow {
+    right: 20px;
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 48px;
   }
 }

@@ -381,13 +381,24 @@ export default function Home() {
           Stop waiting 50+ seconds for inactive instances to spin up.
         </p>
         <div className="landing-hero__actions">
-          <a
-            href="#console"
-            className="btn"
-            style={{ padding: "9px 18px", textDecoration: "none", display: "inline-flex", alignItems: "center" }}
-          >
-            Start Monitoring ↓
-          </a>
+          {session?.user ? (
+            <a
+              href="#console"
+              className="btn"
+              style={{ padding: "9px 18px", textDecoration: "none", display: "inline-flex", alignItems: "center" }}
+            >
+              Go to Console ↓
+            </a>
+          ) : (
+            <button
+              type="button"
+              className="btn"
+              onClick={() => setShowAuthModal(true)}
+              style={{ padding: "9px 18px", display: "inline-flex", alignItems: "center" }}
+            >
+              Start Monitoring →
+            </button>
+          )}
           <a
             href="https://x.com/ptbthefirst"
             target="_blank"
@@ -421,101 +432,115 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Service Monitoring Console */}
-      <div id="console" className="console-header">
-        <h2 className="console-header__title">Active Service Monitor</h2>
-        <span className="console-header__slots">
-          {services.length} / 3 slots used
-        </span>
-      </div>
+      {/* Service Monitoring Console (Authenticated) or Auth Gate (Guest) */}
+      <div id="console" className="console-section">
+        {session?.user ? (
+          <>
+            <div className="console-header">
+              <h2 className="console-header__title">Active Service Monitor</h2>
+              <span className="console-header__slots">
+                {services.length} / 3 slots used
+              </span>
+            </div>
 
-      <form className="form" onSubmit={handleAdd} id="add-service-form">
-        {error && <div className="message message--error">{error}</div>}
-        {success && <div className="message message--success">{success}</div>}
+            <form className="form" onSubmit={handleAdd} id="add-service-form">
+              {error && <div className="message message--error">{error}</div>}
+              {success && <div className="message message--success">{success}</div>}
 
-        <div className="form__row">
-          <div className="form__group">
-            <label className="form__label" htmlFor="url-input">URL</label>
-            <input
-              id="url-input"
-              className="form__input"
-              type="url"
-              placeholder="https://your-app.onrender.com"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              disabled={submitting || isFull}
-              required
-            />
-          </div>
-          <div className="form__group">
-            <label className="form__label" htmlFor="interval-select">Interval</label>
-            <select
-              id="interval-select"
-              className="form__select"
-              value={interval}
-              onChange={(e) => setInterval_(Number(e.target.value))}
-              disabled={submitting || isFull}
-            >
-              {INTERVAL_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+              <div className="form__row">
+                <div className="form__group">
+                  <label className="form__label" htmlFor="url-input">URL</label>
+                  <input
+                    id="url-input"
+                    className="form__input"
+                    type="url"
+                    placeholder="https://your-app.onrender.com"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    disabled={submitting || isFull}
+                    required
+                  />
+                </div>
+                <div className="form__group">
+                  <label className="form__label" htmlFor="interval-select">Interval</label>
+                  <select
+                    id="interval-select"
+                    className="form__select"
+                    value={interval}
+                    onChange={(e) => setInterval_(Number(e.target.value))}
+                    disabled={submitting || isFull}
+                  >
+                    {INTERVAL_OPTIONS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
 
-        <div className="form__bottom">
-          <span className={`form__counter ${isFull ? "form__counter--full" : ""}`}>
-            {services.length} / 3
-          </span>
-          <button
-            id="add-service-btn"
-            className="btn"
-            type="submit"
-            disabled={submitting || isFull || !url.trim()}
-          >
-            {submitting ? "Verifying…" : "Add"}
-          </button>
-        </div>
-      </form>
+              <div className="form__bottom">
+                <span className={`form__counter ${isFull ? "form__counter--full" : ""}`}>
+                  {services.length} / 3
+                </span>
+                <button
+                  id="add-service-btn"
+                  className="btn"
+                  type="submit"
+                  disabled={submitting || isFull || !url.trim()}
+                >
+                  {submitting ? "Verifying…" : "Add"}
+                </button>
+              </div>
+            </form>
 
-      <section className="services">
-        <div className="services__label">Services</div>
+            <section className="services">
+              <div className="services__label">Services</div>
 
-        {loading ? (
-          <div className="loading">Loading…</div>
-        ) : services.length === 0 ? (
-          <div className="services__empty">No services monitored</div>
+              {loading ? (
+                <div className="loading">Loading…</div>
+              ) : services.length === 0 ? (
+                <div className="services__empty">No services monitored yet. Add a URL above.</div>
+              ) : (
+                services.map((service) => (
+                  <ServiceItem
+                    key={service.id}
+                    service={service}
+                    onToggle={handleToggle}
+                    onDelete={(svc) => setDeletingService(svc)}
+                    onIntervalChange={handleIntervalChangeRequest}
+                    onUpdate={(updated) =>
+                      setServices((prev) =>
+                        prev.map((s) => (s.id === updated.id ? updated : s))
+                      )
+                    }
+                  />
+                ))
+              )}
+            </section>
+          </>
         ) : (
-          services.map((service) => (
-            <ServiceItem
-              key={service.id}
-              service={service}
-              onToggle={handleToggle}
-              onDelete={(svc) => setDeletingService(svc)}
-              onIntervalChange={handleIntervalChangeRequest}
-              onUpdate={(updated) =>
-                setServices((prev) =>
-                  prev.map((s) => (s.id === updated.id ? updated : s))
-                )
-              }
-            />
-          ))
+          <div className="auth-gate">
+            <div className="auth-gate__badge">// ACCOUNT REQUIRED</div>
+            <h3 className="auth-gate__title">Sign In to Monitor Your Render Services</h3>
+            <p className="auth-gate__description">
+              Free Render web services spin down after 15 minutes of inactivity. Create an account to unlock 3 keep-alive slots, set customized ping intervals, and keep your applications responsive 24/7.
+            </p>
+            <div className="auth-gate__actions">
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => setShowAuthModal(true)}
+              >
+                Sign In / Create Account →
+              </button>
+            </div>
+            <div className="auth-gate__features">
+              <div className="auth-gate__feature">✓ 3 Free Monitored Web Services</div>
+              <div className="auth-gate__feature">✓ Automated 24/7 Edge Pings</div>
+              <div className="auth-gate__feature">✓ Real-Time Latency & Health Checks</div>
+            </div>
+          </div>
         )}
-      </section>
-
-      <footer className="footer" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "20px" }}>
-        <p className="footer__text">
-          Data stored via browser cookie. Clearing cookies or switching devices
-          will reset your configuration.
-        </p>
-        <a
-          href="/admin"
-          className="footer__text"
-          style={{ textDecoration: "none", color: "var(--text-muted)", fontSize: "11px", whiteSpace: "nowrap" }}
-        >
-          Admin →
-        </a>
-      </footer>
+      </div>
 
       {deletingService && (
         <div

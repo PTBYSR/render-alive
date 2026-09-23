@@ -93,9 +93,9 @@ async function verifyRenderUrl(url) {
  * Or GET /api/urls?check={id} to check/wake a specific service
  */
 export async function GET(request) {
-  const userId = await getUserId();
+  const userId = await getUserId({ requireAuth: true });
   if (!userId) {
-    return NextResponse.json({ error: "No user ID" }, { status: 401 });
+    return NextResponse.json([]);
   }
 
   const { searchParams } = new URL(request.url);
@@ -176,9 +176,12 @@ export async function GET(request) {
  * Body: { url: string, interval?: number }
  */
 export async function POST(request) {
-  const userId = await getUserId();
+  const userId = await getUserId({ requireAuth: true });
   if (!userId) {
-    return NextResponse.json({ error: "No user ID" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Authentication required. Please sign in to monitor services." },
+      { status: 401 }
+    );
   }
 
   let body;
@@ -280,9 +283,9 @@ export async function POST(request) {
  * DELETE /api/urls?id={serviceId} — Remove a monitored service
  */
 export async function DELETE(request) {
-  const userId = await getUserId();
+  const userId = await getUserId({ requireAuth: true });
   if (!userId) {
-    return NextResponse.json({ error: "No user ID" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -318,9 +321,9 @@ export async function DELETE(request) {
  * Body: { id: string, active?: boolean, interval?: number }
  */
 export async function PATCH(request) {
-  const userId = await getUserId();
+  const userId = await getUserId({ requireAuth: true });
   if (!userId) {
-    return NextResponse.json({ error: "No user ID" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   let body;
