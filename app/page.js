@@ -291,9 +291,11 @@ export default function Home() {
         </div>
 
         <div className="top-nav__links">
-          <a href="#console" className="top-nav__link">
-            Console
-          </a>
+          {!session?.user && (
+            <a href="#console" className="top-nav__link">
+              Console
+            </a>
+          )}
           <a
             href="https://x.com/ptbthefirst"
             target="_blank"
@@ -310,19 +312,20 @@ export default function Home() {
           <div className="auth-nav">
             {session?.user ? (
               <div className="auth-nav__user">
-                <span className="auth-nav__avatar">
+                <span className="auth-nav__avatar" title={session.user.email}>
                   {session.user.image ? (
                     <img src={session.user.image} alt={session.user.name || "User"} />
                   ) : (
                     (session.user.name || session.user.email || "U")[0].toUpperCase()
                   )}
                 </span>
-                <span>{session.user.name || session.user.email}</span>
+                <span className="auth-nav__name" title={session.user.email}>
+                  {session.user.name || session.user.email?.split("@")[0]}
+                </span>
                 <button
                   type="button"
-                  className="btn--text"
+                  className="btn--signout"
                   onClick={() => signOut()}
-                  style={{ padding: "4px 8px", fontSize: "11px" }}
                 >
                   Sign Out
                 </button>
@@ -370,26 +373,18 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* One-Header Minimal Landing Page */}
-      <section className="landing-hero">
-        <div className="landing-hero__badge">// ZERO COLD STARTS • 24/7 UPTIME</div>
-        <h1 className="landing-hero__title">
-          Keep your free Render web services awake.
-        </h1>
-        <p className="landing-hero__subtitle">
-          Automated, zero-latency edge pings powered by Upstash Redis and 24/7 keep-alive scheduling.
-          Stop waiting 50+ seconds for inactive instances to spin up.
-        </p>
-        <div className="landing-hero__actions">
-          {session?.user ? (
-            <a
-              href="#console"
-              className="btn"
-              style={{ padding: "9px 18px", textDecoration: "none", display: "inline-flex", alignItems: "center" }}
-            >
-              Go to Console ↓
-            </a>
-          ) : (
+      {/* Guest: Landing Page Hero | Authenticated: Session Service Panel Header */}
+      {!session?.user ? (
+        <section className="landing-hero">
+          <div className="landing-hero__badge">// ZERO COLD STARTS • 24/7 UPTIME</div>
+          <h1 className="landing-hero__title">
+            Keep your free Render web services awake.
+          </h1>
+          <p className="landing-hero__subtitle">
+            Automated, zero-latency edge pings powered by Upstash Redis and 24/7 keep-alive scheduling.
+            Stop waiting 50+ seconds for inactive instances to spin up.
+          </p>
+          <div className="landing-hero__actions">
             <button
               type="button"
               className="btn"
@@ -398,39 +393,47 @@ export default function Home() {
             >
               Start Monitoring →
             </button>
-          )}
-          <a
-            href="https://x.com/ptbthefirst"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn--secondary"
-            style={{
-              padding: "9px 16px",
-              textDecoration: "none",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-            }}
-          >
-            <span>Follow @ptbthefirst</span>
-            <span style={{ fontSize: "11px" }}>↗</span>
-          </a>
-        </div>
-        <div className="landing-hero__metrics">
-          <div className="landing-hero__metric">
-            <span className="landing-hero__metric-value">0s</span>
-            <span className="landing-hero__metric-label">Cold-start lag</span>
+            <a
+              href="https://x.com/ptbthefirst"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn--secondary"
+              style={{
+                padding: "9px 16px",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+              }}
+            >
+              <span>Follow @ptbthefirst</span>
+              <span style={{ fontSize: "11px" }}>↗</span>
+            </a>
           </div>
-          <div className="landing-hero__metric">
-            <span className="landing-hero__metric-value">3</span>
-            <span className="landing-hero__metric-label">Free monitor slots</span>
+          <div className="landing-hero__metrics">
+            <div className="landing-hero__metric">
+              <span className="landing-hero__metric-value">0s</span>
+              <span className="landing-hero__metric-label">Cold-start lag</span>
+            </div>
+            <div className="landing-hero__metric">
+              <span className="landing-hero__metric-value">3</span>
+              <span className="landing-hero__metric-label">Free monitor slots</span>
+            </div>
+            <div className="landing-hero__metric">
+              <span className="landing-hero__metric-value">1-Min</span>
+              <span className="landing-hero__metric-label">Cron resolution</span>
+            </div>
           </div>
-          <div className="landing-hero__metric">
-            <span className="landing-hero__metric-value">1-Min</span>
-            <span className="landing-hero__metric-label">Cron resolution</span>
-          </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="panel-header">
+          <div className="panel-header__eyebrow">// SESSION ACTIVE • SERVICE PANEL</div>
+          <h1 className="panel-header__title">Monitored Web Services</h1>
+          <p className="panel-header__subtitle">
+            Your keep-alive ping daemon is active. Manage up to 3 Render services below.
+          </p>
+        </section>
+      )}
 
       {/* Service Monitoring Console (Authenticated) or Auth Gate (Guest) */}
       <div id="console" className="console-section">
