@@ -628,6 +628,24 @@ export default function Home() {
                   </div>
                 </details>
 
+                                <details className="seo-faq__item">
+                  <summary className="seo-faq__question">
+                    Why do internal timers (setInterval) in Node.js or Python fail on Render?
+                  </summary>
+                  <div className="seo-faq__answer">
+                    When Render suspends an idle container after 15 minutes, the hypervisor freezes the Linux container process entirely. Internal timers stop executing. Only external inbound HTTP requests from an edge monitor like Render Alive can wake or keep the service active.
+                  </div>
+                </details>
+
+                <details className="seo-faq__item">
+                  <summary className="seo-faq__question">
+                    Is using a keep-alive monitor permitted on Render free tier?
+                  </summary>
+                  <div className="seo-faq__answer">
+                    Yes. Lightweight HTTP health pings to your own public application are standard web traffic. As long as your total running time stays within your 750 monthly free instance hours, your service remains fully compliant with Render platform usage.
+                  </div>
+                </details>
+
                 <details className="seo-faq__item">
                   <summary className="seo-faq__question">
                     Is Render Alive free and open-source?
