@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 import redis from "@/lib/redis";
-
 import { isAuthorizedAdmin } from "@/lib/adminAuth";
 
 /**
@@ -45,25 +43,37 @@ export async function GET(request) {
 
   // If specific user detail requested
   if (targetUserId) {
-    const serviceIds = await redis.smembers(`user:${targetUserId}:urls`);
-    if (!serviceIds || serviceIds.length === 0) {
-      return NextResponse.json({
-        userId: targetUserId,
-        serviceCount: 0,
-        services: [],
-      });
+    const userProfile = (await redis.hgetall(`user:${targetUserId}`)) || {};
+    const serviceIds = (await redis.smembers(`user:${targetUserId}:urls`)) || [];
+    let services = [];
+
+    if (serviceIds.length > 0) {
+      const pipeline = redis.pipeline();
+      for (const id of serviceIds) {
+        pipeline.hgetall(`svc:${id}`);
+      }
+      services = (await pipeline.exec())
+        .filter(Boolean)
+        .sort((a, b) => Number(a.createdAt) - Number(b.createdAt));
     }
 
-    const pipeline = redis.pipeline();
-    for (const id of serviceIds) {
-      pipeline.hgetall(`svc:${id}`);
-    }
-    const services = (await pipeline.exec())
-      .filter(Boolean)
-      .sort((a, b) => Number(a.createdAt) - Number(b.createdAt));
+    const authProvider = userProfile.authProvider
+      ? userProfile.authProvider
+      : userProfile.passwordHash
+      ? "Email/Password"
+      : userProfile.image || userProfile.email
+      ? "Google"
+      : "Device ID";
 
     return NextResponse.json({
       userId: targetUserId,
+      email: userProfile.email || "",
+      name: userProfile.name || "",
+      ip: userProfile.lastIp || userProfile.ip || "",
+      country: userProfile.country || "",
+      city: userProfile.city || "",
+      authProvider,
+      createdAt: userProfile.createdAt || "",
       serviceCount: services.length,
       activeCount: services.filter((s) => s.active === true || s.active === "true").length,
       services,
@@ -86,16 +96,17 @@ export async function GET(request) {
   const usersList = [];
 
   for (const uid of allUserIds) {
-    const serviceIds = await redis.smembers(`user:${uid}:urls`);
-    if (!serviceIds || serviceIds.length === 0) {
-      continue;
-    }
+    const userProfile = (await redis.hgetall(`user:${uid}`)) || {};
+    const serviceIds = (await redis.smembers(`user:${uid}:urls`)) || [];
 
-    const pipeline = redis.pipeline();
-    for (const sid of serviceIds) {
-      pipeline.hgetall(`svc:${sid}`);
+    let userServices = [];
+    if (serviceIds.length > 0) {
+      const pipeline = redis.pipeline();
+      for (const sid of serviceIds) {
+        pipeline.hgetall(`svc:${sid}`);
+      }
+      userServices = (await pipeline.exec()).filter(Boolean);
     }
-    const userServices = (await pipeline.exec()).filter(Boolean);
 
     const activeCount = userServices.filter(
       (s) => s.active === true || s.active === "true"
@@ -116,13 +127,27 @@ export async function GET(request) {
       }
     }
 
+    const authProvider = userProfile.authProvider
+      ? userProfile.authProvider
+      : userProfile.passwordHash
+      ? "Email"
+      : userProfile.image || userProfile.email
+      ? "Google"
+      : "Device ID";
+
     usersList.push({
       userId: uid,
+      email: userProfile.email || "",
+      name: userProfile.name || "",
+      ip: userProfile.lastIp || userProfile.ip || "",
+      country: userProfile.country || "",
+      city: userProfile.city || "",
+      authProvider,
       serviceCount: userServices.length,
       activeCount,
       pausedCount: userServices.length - activeCount,
       latestPingAt: latestPing > 0 ? String(latestPing) : "",
-      createdAt: earliestCreated !== Infinity ? String(earliestCreated) : "",
+      createdAt: userProfile.createdAt || (earliestCreated !== Infinity ? String(earliestCreated) : ""),
       urls: userServices.map((s) => s.url),
       services: userServices,
     });

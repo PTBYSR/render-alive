@@ -2,6 +2,15 @@ import { NextResponse } from "next/server";
 import redis from "@/lib/redis";
 import { getUserId } from "@/lib/userId";
 
+function extractClientGeo(request) {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const ip = forwarded ? forwarded.split(",")[0].trim() : (request.headers.get("x-real-ip") || "Unknown");
+  const country = request.headers.get("x-vercel-ip-country") || "";
+  const city = request.headers.get("x-vercel-ip-city") || "";
+  return { ip, country, city };
+}
+
+
 const MAX_URLS = 3;
 const MIN_INTERVAL = 300;  // 5 minutes
 const MAX_INTERVAL = 1800; // 30 minutes
@@ -97,6 +106,15 @@ export async function GET(request) {
   if (!userId) {
     return NextResponse.json([]);
   }
+  const geo = extractClientGeo(request);
+  try {
+    await redis.hset(`user:${userId}`, {
+      lastIp: geo.ip,
+      ...(geo.country ? { country: geo.country } : {}),
+      ...(geo.city ? { city: geo.city } : {}),
+      lastSeenAt: String(Date.now()),
+    });
+  } catch {}
 
   const { searchParams } = new URL(request.url);
   const checkId = searchParams.get("check");

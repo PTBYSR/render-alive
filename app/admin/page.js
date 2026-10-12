@@ -9,7 +9,7 @@ function timeAgo(timestamp) {
   if (seconds < 60) return `${Math.max(1, seconds)}s ago`;
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
@@ -33,7 +33,7 @@ function formatInterval(seconds) {
 }
 
 export default function AdminPage() {
-  const [authState, setAuthState] = useState("loading"); // loading, unauthorized, authorized
+  const [authState, setAuthState] = useState("loading");
   const [keyInput, setKeyInput] = useState("");
   const [loginError, setLoginError] = useState("");
   const [submittingKey, setSubmittingKey] = useState(false);
@@ -146,7 +146,7 @@ export default function AdminPage() {
             <span className="admin-header__badge">Admin</span>
           </div>
           <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "20px" }}>
-            Sign in with the admin key to access created accounts and Render service telemetry.
+            Sign in with the admin key to access created accounts, emails, IP addresses, and Render service telemetry.
           </p>
 
           <form onSubmit={handleLogin}>
@@ -180,17 +180,23 @@ export default function AdminPage() {
 
   const filteredUsers = data.users.filter((u) => {
     const q = searchTerm.toLowerCase();
-    return u.userId.toLowerCase().includes(q) || u.urls.some((url) => url.toLowerCase().includes(q));
+    return (
+      (u.email && u.email.toLowerCase().includes(q)) ||
+      u.userId.toLowerCase().includes(q) ||
+      (u.ip && u.ip.toLowerCase().includes(q)) ||
+      (u.country && u.country.toLowerCase().includes(q)) ||
+      u.urls.some((url) => url.toLowerCase().includes(q))
+    );
   });
 
   const selectedUser = data.users.find((u) => u.userId === selectedUserId) || filteredUsers[0];
 
   return (
-    <main className="admin-container" style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 24px" }}>
+    <main className="admin-container" style={{ maxWidth: "1160px", margin: "0 auto", padding: "40px 24px" }}>
       <header className="admin-header" style={{ marginBottom: "28px" }}>
         <div className="admin-header__title-group">
           <h1 className="header__title" style={{ margin: 0, fontSize: "20px" }}>Render Alive</h1>
-          <span className="admin-header__badge">Admin</span>
+          <span className="admin-header__badge">Admin Directory</span>
         </div>
         <nav className="admin-header__nav">
           <Link href="/">← Public App</Link>
@@ -218,15 +224,15 @@ export default function AdminPage() {
         </div>
       </section>
 
-      {/* Main Split Layout: Item List + Details */}
-      <div style={{ display: "grid", gridTemplateColumns: "340px 1fr", gap: "24px", alignItems: "start" }}>
+      {/* Master-Detail Layout */}
+      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "24px", alignItems: "start" }}>
         
         {/* Left Column: Item List of Created Accounts */}
         <div style={{ border: "1px solid var(--border)", background: "var(--white)" }}>
           <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-secondary)" }}>
-                Accounts List ({data.totalUsers})
+                Created Accounts ({data.totalUsers})
               </span>
               <button type="button" className="btn--text" onClick={loadUsers} disabled={loadingData} style={{ fontSize: "11px" }}>
                 {loadingData ? "Refreshing…" : "Refresh"}
@@ -234,17 +240,17 @@ export default function AdminPage() {
             </div>
             <input
               type="text"
-              placeholder="Filter accounts by ID or URL..."
+              placeholder="Search by email, IP, country, or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: "100%", padding: "6px 8px", fontSize: "12px", border: "1px solid var(--border)", outline: "none", boxSizing: "border-box" }}
+              style={{ width: "100%", padding: "7px 10px", fontSize: "12px", border: "1px solid var(--border)", outline: "none", boxSizing: "border-box" }}
             />
           </div>
 
-          <div style={{ maxHeight: "600px", overflowY: "auto" }}>
+          <div style={{ maxHeight: "640px", overflowY: "auto" }}>
             {filteredUsers.length === 0 ? (
               <div style={{ padding: "30px 16px", textAlign: "center", color: "var(--text-muted)", fontSize: "12px" }}>
-                No accounts found.
+                No accounts match your search.
               </div>
             ) : (
               filteredUsers.map((user) => {
@@ -262,21 +268,30 @@ export default function AdminPage() {
                       transition: "all 0.1s ease",
                     }}
                   >
+                    {/* User Email & Auth Type */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                      <span style={{ fontFamily: "var(--mono)", fontSize: "12px", fontWeight: isSelected ? "600" : "500", color: "var(--text)" }}>
-                        {user.userId}
+                      <span style={{ fontSize: "12px", fontWeight: isSelected ? "600" : "500", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "230px" }}>
+                        {user.email || user.userId}
                       </span>
-                      <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>
-                        {user.activeCount} active
+                      <span style={{ fontSize: "9px", padding: "1px 5px", border: "1px solid var(--border)", textTransform: "uppercase", fontFamily: "var(--mono)" }}>
+                        {user.authProvider || "Device"}
                       </span>
                     </div>
 
-                    <div style={{ fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px" }}>
-                      {user.serviceCount} / 3 slots used
+                    {/* Geo Location & IP */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>
+                      {user.country && (
+                        <span style={{ fontWeight: "600", color: "var(--text-secondary)" }}>
+                          🌍 {user.country}{user.city ? ` (${user.city})` : ""}
+                        </span>
+                      )}
+                      <span>IP: {user.ip || "Unknown"}</span>
                     </div>
 
-                    <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>
-                      Active: {timeAgo(user.latestPingAt)}
+                    {/* Service Slot Counts */}
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "10px", color: "var(--text-muted)" }}>
+                      <span>{user.serviceCount} / 3 slots used ({user.activeCount} active)</span>
+                      <span>{timeAgo(user.latestPingAt || user.createdAt)}</span>
                     </div>
                   </div>
                 );
@@ -289,24 +304,51 @@ export default function AdminPage() {
         <div style={{ border: "1px solid var(--border)", padding: "24px", background: "var(--white)" }}>
           {!selectedUser ? (
             <div style={{ padding: "40px", textAlign: "center", color: "var(--text-muted)" }}>
-              Select an account from the item list to view details and Render services.
+              Select an account from the item list on the left to inspect its details, email, IP, and Render services.
             </div>
           ) : (
             <div>
-              {/* Account Detail Header */}
-              <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "16px", marginBottom: "20px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+              {/* Account Profile Header */}
+              <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "18px", marginBottom: "22px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
                   <div>
-                    <span style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)" }}>Account Details</span>
-                    <h2 style={{ fontSize: "16px", fontWeight: "600", fontFamily: "var(--mono)", margin: "2px 0 0" }}>
-                      {selectedUser.userId}
+                    <span style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)" }}>Account Profile</span>
+                    <h2 style={{ fontSize: "18px", fontWeight: "600", margin: "2px 0 0", wordBreak: "break-all" }}>
+                      {selectedUser.email || selectedUser.userId}
                     </h2>
+                    {selectedUser.name && (
+                      <div style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px" }}>
+                        Name: {selectedUser.name}
+                      </div>
+                    )}
                   </div>
-                  <Link href={`/admin/users/${selectedUser.userId}`} className="btn--text" style={{ fontSize: "11px" }}>
-                    Dedicated Page ↗
-                  </Link>
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    <span style={{ fontSize: "11px", padding: "3px 8px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontFamily: "var(--mono)" }}>
+                      {selectedUser.authProvider}
+                    </span>
+                    <Link href={`/admin/users/${selectedUser.userId}`} className="btn--text" style={{ fontSize: "11px" }}>
+                      Dedicated View ↗
+                    </Link>
+                  </div>
                 </div>
 
+                {/* Identity & Geo-location Grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", padding: "12px 14px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontSize: "11px", marginBottom: "12px" }}>
+                  <div>
+                    <div style={{ color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", marginBottom: "2px" }}>IP Address</div>
+                    <strong style={{ fontFamily: "var(--mono)" }}>{selectedUser.ip || "Not recorded yet"}</strong>
+                  </div>
+                  <div>
+                    <div style={{ color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", marginBottom: "2px" }}>Country / Region</div>
+                    <strong>{selectedUser.country ? `${selectedUser.country} ${selectedUser.city ? '(' + selectedUser.city + ')' : ''}` : "Unknown"}</strong>
+                  </div>
+                  <div>
+                    <div style={{ color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", marginBottom: "2px" }}>User ID</div>
+                    <span style={{ fontFamily: "var(--mono)", fontSize: "10px" }}>{selectedUser.userId}</span>
+                  </div>
+                </div>
+
+                {/* Account Usage Metrics */}
                 <div style={{ display: "flex", gap: "20px", fontSize: "12px", color: "var(--text-secondary)" }}>
                   <div>
                     <span style={{ color: "var(--text-muted)" }}>Services: </span>
@@ -334,7 +376,7 @@ export default function AdminPage() {
                 </h3>
 
                 {(!selectedUser.services || selectedUser.services.length === 0) ? (
-                  <div style={{ padding: "20px", textAlign: "center", color: "var(--text-muted)", fontSize: "12px", border: "1px dashed var(--border)" }}>
+                  <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", fontSize: "12px", border: "1px dashed var(--border)" }}>
                     No Render services added by this account yet.
                   </div>
                 ) : (

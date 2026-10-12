@@ -106,17 +106,47 @@ export default function UserDetailPage() {
       <header className="admin-header">
         <div className="admin-header__title-group">
           <h1 className="header__title" style={{ margin: 0 }}>User Profile</h1>
-          <span className="admin-header__badge">Detail</span>
+          <span className="admin-header__badge">{userData.authProvider || "User"}</span>
         </div>
         <button type="button" className="btn--text" onClick={loadUserData}>
           Refresh Telemetry
         </button>
       </header>
 
-      {/* User Identity Card */}
-      <section className="user-detail__card">
-        <div className="user-detail__title">Device / User ID</div>
-        <div className="user-detail__id">{userData.userId}</div>
+      {/* User Identity Card with Email, IP, Country */}
+      <section className="user-detail__card" style={{ padding: "20px 24px", background: "var(--white)", border: "1px solid var(--border)", marginBottom: "24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+          <div>
+            <div style={{ fontSize: "10px", textTransform: "uppercase", color: "var(--text-muted)", letterSpacing: "0.06em" }}>Account Email / ID</div>
+            <div style={{ fontSize: "18px", fontWeight: "600", wordBreak: "break-all" }}>
+              {userData.email || userData.userId}
+            </div>
+            {userData.name && (
+              <div style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px" }}>
+                Name: {userData.name}
+              </div>
+            )}
+          </div>
+          <span style={{ fontSize: "11px", padding: "3px 8px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontFamily: "var(--mono)" }}>
+            {userData.authProvider}
+          </span>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "14px", padding: "12px 14px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontSize: "11px", marginBottom: "14px" }}>
+          <div>
+            <span style={{ color: "var(--text-muted)", display: "block", fontSize: "10px", textTransform: "uppercase" }}>IP Address</span>
+            <strong style={{ fontFamily: "var(--mono)" }}>{userData.ip || "Not recorded"}</strong>
+          </div>
+          <div>
+            <span style={{ color: "var(--text-muted)", display: "block", fontSize: "10px", textTransform: "uppercase" }}>Country / City</span>
+            <strong>{userData.country ? `${userData.country} ${userData.city ? '(' + userData.city + ')' : ''}` : "Unknown"}</strong>
+          </div>
+          <div>
+            <span style={{ color: "var(--text-muted)", display: "block", fontSize: "10px", textTransform: "uppercase" }}>User ID</span>
+            <span style={{ fontFamily: "var(--mono)", fontSize: "10px" }}>{userData.userId}</span>
+          </div>
+        </div>
+
         <div style={{ display: "flex", gap: "24px", flexWrap: "wrap", fontSize: "12px", color: "var(--text-secondary)" }}>
           <div>
             <span style={{ color: "var(--text-muted)" }}>Services: </span>
