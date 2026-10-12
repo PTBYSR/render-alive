@@ -22,7 +22,7 @@ function timeUntil(timestamp) {
   if (diff < 60) return `${diff}s`;
   const minutes = Math.floor(diff / 60);
   if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60);
+  const hours = Math.floor(diff / 60);
   return `${hours}h`;
 }
 
@@ -49,6 +49,7 @@ export default function AdminPage() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [openPreviews, setOpenPreviews] = useState({});
+  const [mobileTab, setMobileTab] = useState("list"); // "list" or "detail"
 
   useEffect(() => {
     checkAuth();
@@ -129,6 +130,11 @@ export default function AdminPage() {
     }));
   };
 
+  const selectUserOnMobile = (userId) => {
+    setSelectedUserId(userId);
+    setMobileTab("detail");
+  };
+
   if (authState === "loading") {
     return (
       <main className="admin-container">
@@ -139,8 +145,8 @@ export default function AdminPage() {
 
   if (authState === "unauthorized") {
     return (
-      <main className="admin-container" style={{ maxWidth: "420px", margin: "80px auto", padding: "0 20px" }}>
-        <div className="login-card" style={{ border: "1px solid var(--border)", padding: "32px", background: "var(--white)" }}>
+      <main className="admin-container" style={{ maxWidth: "420px", margin: "60px auto", padding: "0 16px" }}>
+        <div className="login-card" style={{ border: "1px solid var(--border)", padding: "28px 24px", background: "var(--white)" }}>
           <div className="admin-header__title-group" style={{ marginBottom: "16px" }}>
             <h1 className="header__title" style={{ margin: 0, fontSize: "18px" }}>Render Alive</h1>
             <span className="admin-header__badge">Admin</span>
@@ -163,7 +169,7 @@ export default function AdminPage() {
                 disabled={submittingKey}
                 autoFocus
                 required
-                style={{ width: "100%", padding: "8px 10px", fontSize: "13px", border: "1px solid var(--border)", outline: "none", boxSizing: "border-box" }}
+                style={{ width: "100%", padding: "9px 10px", fontSize: "13px", border: "1px solid var(--border)", outline: "none", boxSizing: "border-box" }}
               />
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -192,8 +198,8 @@ export default function AdminPage() {
   const selectedUser = data.users.find((u) => u.userId === selectedUserId) || filteredUsers[0];
 
   return (
-    <main className="admin-container" style={{ maxWidth: "1160px", margin: "0 auto", padding: "40px 24px" }}>
-      <header className="admin-header" style={{ marginBottom: "28px" }}>
+    <main className="admin-container" style={{ maxWidth: "1160px", margin: "0 auto", padding: "36px 20px" }}>
+      <header className="admin-header">
         <div className="admin-header__title-group">
           <h1 className="header__title" style={{ margin: 0, fontSize: "20px" }}>Render Alive</h1>
           <span className="admin-header__badge">Admin Directory</span>
@@ -207,28 +213,54 @@ export default function AdminPage() {
       </header>
 
       {/* Top Telemetry Metrics */}
-      <section className="admin-metrics" style={{ marginBottom: "32px", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
-        <div className="metric-card" style={{ border: "1px solid var(--border)", padding: "16px 20px" }}>
-          <div className="metric-card__label" style={{ fontSize: "10px", textTransform: "uppercase", color: "var(--text-muted)", letterSpacing: "0.06em", marginBottom: "4px" }}>Total Accounts</div>
-          <div className="metric-card__value" style={{ fontSize: "24px", fontWeight: "600", fontFamily: "var(--mono)" }}>{data.totalUsers}</div>
+      <section className="admin-metrics">
+        <div className="metric-card">
+          <div className="metric-card__label">Total Accounts</div>
+          <div className="metric-card__value">{data.totalUsers}</div>
         </div>
-        <div className="metric-card" style={{ border: "1px solid var(--border)", padding: "16px 20px" }}>
-          <div className="metric-card__label" style={{ fontSize: "10px", textTransform: "uppercase", color: "var(--text-muted)", letterSpacing: "0.06em", marginBottom: "4px" }}>Monitored Render Services</div>
-          <div className="metric-card__value" style={{ fontSize: "24px", fontWeight: "600", fontFamily: "var(--mono)" }}>{data.totalServices}</div>
+        <div className="metric-card">
+          <div className="metric-card__label">Monitored Services</div>
+          <div className="metric-card__value">{data.totalServices}</div>
         </div>
-        <div className="metric-card" style={{ border: "1px solid var(--border)", padding: "16px 20px" }}>
-          <div className="metric-card__label" style={{ fontSize: "10px", textTransform: "uppercase", color: "var(--text-muted)", letterSpacing: "0.06em", marginBottom: "4px" }}>Active / Paused</div>
-          <div className="metric-card__value" style={{ fontSize: "24px", fontWeight: "600", fontFamily: "var(--mono)" }}>
+        <div className="metric-card">
+          <div className="metric-card__label">Active / Paused</div>
+          <div className="metric-card__value">
             {data.activeServices} <span style={{ fontSize: "14px", color: "var(--text-muted)" }}>/ {data.totalServices - data.activeServices}</span>
           </div>
         </div>
       </section>
 
-      {/* Master-Detail Layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: "24px", alignItems: "start" }}>
+      {/* Mobile Tab Switcher */}
+      <div className="mobile-admin-tabs">
+        <button
+          type="button"
+          className={`mobile-tab-btn ${mobileTab === "list" ? "active" : ""}`}
+          onClick={() => setMobileTab("list")}
+        >
+          Accounts List ({filteredUsers.length})
+        </button>
+        <button
+          type="button"
+          className={`mobile-tab-btn ${mobileTab === "detail" ? "active" : ""}`}
+          onClick={() => setMobileTab("detail")}
+          disabled={!selectedUser}
+        >
+          Account Details
+        </button>
+      </div>
+
+      {/* Master-Detail Responsive Grid */}
+      <div className="admin-layout-grid">
         
-        {/* Left Column: Item List of Created Accounts */}
-        <div style={{ border: "1px solid var(--border)", background: "var(--white)" }}>
+        {/* Left Column: Accounts Item List */}
+        <div
+          style={{
+            border: "1px solid var(--border)",
+            background: "var(--white)",
+            display: typeof window !== "undefined" && window.innerWidth <= 860 && mobileTab !== "list" ? "none" : "block",
+          }}
+          className="admin-list-pane"
+        >
           <div style={{ padding: "14px 16px", borderBottom: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: "11px", fontWeight: "600", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-secondary)" }}>
@@ -243,7 +275,7 @@ export default function AdminPage() {
               placeholder="Search by email, IP, country, or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ width: "100%", padding: "7px 10px", fontSize: "12px", border: "1px solid var(--border)", outline: "none", boxSizing: "border-box" }}
+              style={{ width: "100%", padding: "8px 10px", fontSize: "12px", border: "1px solid var(--border)", outline: "none", boxSizing: "border-box" }}
             />
           </div>
 
@@ -258,7 +290,7 @@ export default function AdminPage() {
                 return (
                   <div
                     key={user.userId}
-                    onClick={() => setSelectedUserId(user.userId)}
+                    onClick={() => selectUserOnMobile(user.userId)}
                     style={{
                       padding: "12px 14px",
                       borderBottom: "1px solid var(--border)",
@@ -270,7 +302,7 @@ export default function AdminPage() {
                   >
                     {/* User Email & Auth Type */}
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                      <span style={{ fontSize: "12px", fontWeight: isSelected ? "600" : "500", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "230px" }}>
+                      <span style={{ fontSize: "12px", fontWeight: isSelected ? "600" : "500", color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "220px" }}>
                         {user.email || user.userId}
                       </span>
                       <span style={{ fontSize: "9px", padding: "1px 5px", border: "1px solid var(--border)", textTransform: "uppercase", fontFamily: "var(--mono)" }}>
@@ -279,7 +311,7 @@ export default function AdminPage() {
                     </div>
 
                     {/* Geo Location & IP */}
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px", flexWrap: "wrap" }}>
                       {user.country && (
                         <span style={{ fontWeight: "600", color: "var(--text-secondary)" }}>
                           🌍 {user.country}{user.city ? ` (${user.city})` : ""}
@@ -300,20 +332,40 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Right Column: Account Details & Render Services with Stats/Metrics */}
-        <div style={{ border: "1px solid var(--border)", padding: "24px", background: "var(--white)" }}>
+        {/* Right Column: Account Details & Render Services */}
+        <div
+          style={{
+            border: "1px solid var(--border)",
+            padding: "20px",
+            background: "var(--white)",
+            display: typeof window !== "undefined" && window.innerWidth <= 860 && mobileTab !== "detail" ? "none" : "block",
+          }}
+          className="admin-detail-pane"
+        >
+          {/* Mobile Back Button */}
+          <div style={{ marginBottom: "14px" }} className="mobile-admin-tabs">
+            <button
+              type="button"
+              className="btn--text"
+              onClick={() => setMobileTab("list")}
+              style={{ fontSize: "12px", display: "flex", alignItems: "center", gap: "4px" }}
+            >
+              ← Back to Accounts List
+            </button>
+          </div>
+
           {!selectedUser ? (
             <div style={{ padding: "40px", textAlign: "center", color: "var(--text-muted)" }}>
-              Select an account from the item list on the left to inspect its details, email, IP, and Render services.
+              Select an account from the item list to inspect its details, email, IP, and Render services.
             </div>
           ) : (
             <div>
               {/* Account Profile Header */}
-              <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "18px", marginBottom: "22px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+              <div style={{ borderBottom: "1px solid var(--border)", paddingBottom: "16px", marginBottom: "20px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px", flexWrap: "wrap", gap: "10px" }}>
                   <div>
                     <span style={{ fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)" }}>Account Profile</span>
-                    <h2 style={{ fontSize: "18px", fontWeight: "600", margin: "2px 0 0", wordBreak: "break-all" }}>
+                    <h2 style={{ fontSize: "17px", fontWeight: "600", margin: "2px 0 0", wordBreak: "break-all" }}>
                       {selectedUser.email || selectedUser.userId}
                     </h2>
                     {selectedUser.name && (
@@ -323,7 +375,7 @@ export default function AdminPage() {
                     )}
                   </div>
                   <div style={{ display: "flex", gap: "6px" }}>
-                    <span style={{ fontSize: "11px", padding: "3px 8px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontFamily: "var(--mono)" }}>
+                    <span style={{ fontSize: "10px", padding: "2px 7px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontFamily: "var(--mono)" }}>
                       {selectedUser.authProvider}
                     </span>
                     <Link href={`/admin/users/${selectedUser.userId}`} className="btn--text" style={{ fontSize: "11px" }}>
@@ -333,23 +385,23 @@ export default function AdminPage() {
                 </div>
 
                 {/* Identity & Geo-location Grid */}
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px", padding: "12px 14px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontSize: "11px", marginBottom: "12px" }}>
+                <div className="admin-identity-grid">
                   <div>
-                    <div style={{ color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", marginBottom: "2px" }}>IP Address</div>
-                    <strong style={{ fontFamily: "var(--mono)" }}>{selectedUser.ip || "Not recorded yet"}</strong>
+                    <div style={{ color: "var(--text-muted)", fontSize: "9px", textTransform: "uppercase", marginBottom: "2px" }}>IP Address</div>
+                    <strong style={{ fontFamily: "var(--mono)", wordBreak: "break-all" }}>{selectedUser.ip || "Not recorded yet"}</strong>
                   </div>
                   <div>
-                    <div style={{ color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", marginBottom: "2px" }}>Country / Region</div>
+                    <div style={{ color: "var(--text-muted)", fontSize: "9px", textTransform: "uppercase", marginBottom: "2px" }}>Country / Region</div>
                     <strong>{selectedUser.country ? `${selectedUser.country} ${selectedUser.city ? '(' + selectedUser.city + ')' : ''}` : "Unknown"}</strong>
                   </div>
                   <div>
-                    <div style={{ color: "var(--text-muted)", fontSize: "10px", textTransform: "uppercase", marginBottom: "2px" }}>User ID</div>
-                    <span style={{ fontFamily: "var(--mono)", fontSize: "10px" }}>{selectedUser.userId}</span>
+                    <div style={{ color: "var(--text-muted)", fontSize: "9px", textTransform: "uppercase", marginBottom: "2px" }}>User ID</div>
+                    <span style={{ fontFamily: "var(--mono)", fontSize: "10px", wordBreak: "break-all" }}>{selectedUser.userId}</span>
                   </div>
                 </div>
 
                 {/* Account Usage Metrics */}
-                <div style={{ display: "flex", gap: "20px", fontSize: "12px", color: "var(--text-secondary)" }}>
+                <div style={{ display: "flex", gap: "16px", fontSize: "12px", color: "var(--text-secondary)", flexWrap: "wrap" }}>
                   <div>
                     <span style={{ color: "var(--text-muted)" }}>Services: </span>
                     <strong style={{ fontFamily: "var(--mono)" }}>{selectedUser.serviceCount} / 3 slots</strong>
@@ -376,7 +428,7 @@ export default function AdminPage() {
                 </h3>
 
                 {(!selectedUser.services || selectedUser.services.length === 0) ? (
-                  <div style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)", fontSize: "12px", border: "1px dashed var(--border)" }}>
+                  <div style={{ padding: "26px", textAlign: "center", color: "var(--text-muted)", fontSize: "12px", border: "1px dashed var(--border)" }}>
                     No Render services added by this account yet.
                   </div>
                 ) : (
@@ -402,19 +454,19 @@ export default function AdminPage() {
                         key={service.id}
                         style={{
                           border: "1px solid var(--border)",
-                          padding: "16px 18px",
+                          padding: "16px 16px",
                           marginBottom: "12px",
                           background: "var(--white)",
                         }}
                       >
                         {/* Service Title Bar */}
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px", flexWrap: "wrap", gap: "6px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                             <a
                               href={service.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ fontWeight: "600", fontSize: "13px", color: "var(--text)", textDecoration: "none" }}
+                              style={{ fontWeight: "600", fontSize: "13px", color: "var(--text)", textDecoration: "none", wordBreak: "break-all" }}
                             >
                               {service.url} ↗
                             </a>
@@ -428,7 +480,7 @@ export default function AdminPage() {
                         </div>
 
                         {/* Telemetry Metrics Grid */}
-                        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", padding: "10px 12px", background: "var(--gray-50, #f9fafb)", border: "1px solid var(--border)", fontSize: "11px" }}>
+                        <div className="admin-service-metrics-grid">
                           <div>
                             <div style={{ color: "var(--text-muted)", textTransform: "uppercase", fontSize: "9px", marginBottom: "2px" }}>Status</div>
                             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
