@@ -28,11 +28,43 @@ export async function GET(request) {
  * POST /api/admin/auth — Authenticate admin with secret key & brute-force protection
  */
 export async function POST(request) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const { secret } = body;
   const ip = getClientIp(request);
   const lockoutKey = `admin_lockout:${ip}`;
   const attemptsKey = `admin_attempts:${ip}`;
 
-  // 1. Check if IP is currently locked out
+  // 1. Validate secret first — entering the correct key immediately clears any lockout
+  const isValid = isValidAdminSecret(secret);
+
+  if (isValid) {
+    // Successfully authenticated: clear all lockout counters
+    try {
+      await redis.del(attemptsKey);
+      await redis.del(lockoutKey);
+    } catch {}
+
+    // Issue cryptographically signed session cookie
+    const sessionToken = getAdminSessionToken(secret?.trim() || "Godisgood123");
+    const response = NextResponse.json({ ok: true });
+    response.cookies.set(ADMIN_COOKIE, sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+
+    return response;
+  }
+
+  // 2. If invalid, check if IP is currently locked out
   const isLocked = await redis.get(lockoutKey);
   if (isLocked) {
     const ttl = await redis.ttl(lockoutKey);
@@ -47,62 +79,33 @@ export async function POST(request) {
     );
   }
 
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  // 3. Increment failed attempt counter
+  const attempts = await redis.incr(attemptsKey);
+  if (attempts === 1) {
+    await redis.expire(attemptsKey, LOCKOUT_SECONDS);
   }
 
-  const { secret } = body;
-  const isValid = isValidAdminSecret(secret);
-
-  if (!isValid) {
-    // Increment failed attempt counter
-    const attempts = await redis.incr(attemptsKey);
-    if (attempts === 1) {
-      await redis.expire(attemptsKey, LOCKOUT_SECONDS);
-    }
-
-    if (attempts >= MAX_FAILED_ATTEMPTS) {
-      await redis.set(lockoutKey, "locked", { ex: LOCKOUT_SECONDS });
-      await redis.del(attemptsKey);
-      return NextResponse.json(
-        {
-          error:
-            "Too many failed attempts. Admin access has been locked for 15 minutes.",
-        },
-        { status: 429 }
-      );
-    }
-
-    const remaining = MAX_FAILED_ATTEMPTS - attempts;
+  if (attempts >= MAX_FAILED_ATTEMPTS) {
+    await redis.set(lockoutKey, "locked", { ex: LOCKOUT_SECONDS });
+    await redis.del(attemptsKey);
     return NextResponse.json(
       {
-        error: `Invalid admin key. ${remaining} attempt${
-          remaining === 1 ? "" : "s"
-        } remaining before lockout.`,
+        error:
+          "Too many failed attempts. Admin access has been locked for 15 minutes.",
       },
-      { status: 401 }
+      { status: 429 }
     );
   }
 
-  // 3. Reset failed attempts upon successful login
-  await redis.del(attemptsKey);
-  await redis.del(lockoutKey);
-
-  // 4. Issue cryptographically signed session cookie
-  const sessionToken = getAdminSessionToken(secret?.trim() || "Godisgood123");
-  const response = NextResponse.json({ ok: true });
-  response.cookies.set(ADMIN_COOKIE, sessionToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  });
-
-  return response;
+  const remaining = MAX_FAILED_ATTEMPTS - attempts;
+  return NextResponse.json(
+    {
+      error: `Invalid admin key. ${remaining} attempt${
+        remaining === 1 ? "" : "s"
+      } remaining before lockout.`,
+    },
+    { status: 401 }
+  );
 }
 
 /**
