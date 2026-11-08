@@ -383,12 +383,12 @@ export default function Home() {
       {/* Guest: Landing Page Hero | Authenticated: Session Service Panel Header */}
       {!session?.user ? (
         <section className="landing-hero">
-          <div className="landing-hero__badge">// FIX RENDER FREE TIER SPIN-DOWN • 24/7 UPTIME</div>
+          <div className="landing-hero__badge">// 24/7 CLOUD KEEP-ALIVE DAEMON • RENDER, KOYEB, GLITCH & MORE</div>
           <h1 className="landing-hero__title">
-            Keep your free Render web services awake 24/7.
+            Keep your free web services & APIs awake 24/7.
           </h1>
           <p className="landing-hero__subtitle">
-            Stop Render free-tier downtime and 50+ second cold starts. Automated keep-alive edge pings prevent your web services from sleeping after 15 minutes of inactivity.
+            Stop free-tier downtime and 50+ second cold starts. Automated keep-alive edge pings prevent Render, Koyeb, Glitch, and custom domain web services from sleeping after inactivity.
           </p>
           <div className="landing-hero__actions">
             <button
@@ -420,7 +420,7 @@ export default function Home() {
           <div className="panel-header__eyebrow">// SESSION ACTIVE • SERVICE PANEL</div>
           <h1 className="panel-header__title">Monitored Web Services</h1>
           <p className="panel-header__subtitle">
-            Your keep-alive ping daemon is active. Manage up to 3 Render services below.
+            Your keep-alive ping daemon is active. Manage up to 3 web services or APIs below.
           </p>
         </section>
       )}
@@ -447,7 +447,7 @@ export default function Home() {
                     id="url-input"
                     className="form__input"
                     type="url"
-                    placeholder="https://your-app.onrender.com"
+                    placeholder="https://your-app.onrender.com, koyeb.app, or any cloud API"
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     disabled={submitting || isFull}
@@ -514,9 +514,9 @@ export default function Home() {
           <>
             <div className="auth-gate">
               <div className="auth-gate__badge">// ACCOUNT REQUIRED</div>
-              <h3 className="auth-gate__title">Sign In to Monitor Your Render Services</h3>
+              <h3 className="auth-gate__title">Sign In to Monitor Your Web Services</h3>
               <p className="auth-gate__description">
-                Free Render web services spin down after 15 minutes of inactivity. Create an account to unlock 3 keep-alive slots, set customized ping intervals, and keep your applications responsive 24/7.
+                Free-tier instances on Render, Koyeb, Glitch, and cloud hosts spin down after inactivity. Create an account to unlock 3 keep-alive slots, set customized ping intervals, and keep your applications responsive 24/7.
               </p>
               <div className="auth-gate__actions">
                 <button
@@ -588,11 +588,20 @@ export default function Home() {
             <section className="seo-faq" aria-labelledby="seo-faq-title">
               <div className="seo-faq__badge">// FREQUENTLY ASKED QUESTIONS</div>
               <h2 id="seo-faq-title" className="seo-faq__title">
-                Render Free Tier Keep-Alive FAQ
+                Keep-Alive & Free Tier Uptime FAQ
               </h2>
 
               <div className="seo-faq__list">
-                <details className="seo-faq__item" open>
+                                <details className="seo-faq__item" open>
+                  <summary className="seo-faq__question">
+                    Does Render Alive support other platforms like Koyeb, Glitch, or custom domains?
+                  </summary>
+                  <div className="seo-faq__answer">
+                    Yes! While originally built for Render, Render Alive actively keeps alive web services and APIs across Render, Koyeb (.koyeb.app), Glitch (.glitch.me), Hugging Face Spaces (.hf.space), Fly.io, and custom domain backends. Any public HTTPS service with an inactivity timeout can be monitored.
+                  </div>
+                </details>
+
+                <details className="seo-faq__item">
                   <summary className="seo-faq__question">
                     Why do Render free web services go down or turn off?
                   </summary>

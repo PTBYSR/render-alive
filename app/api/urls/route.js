@@ -23,6 +23,26 @@ async function verifyRenderUrl(url) {
   const parsed = new URL(url);
   const isRenderDomain = parsed.hostname.endsWith(".onrender.com");
 
+// SSRF Protection: Reject private/internal IPs and non-public hosts
+  const hostname = parsed.hostname.toLowerCase();
+  const isLocalhost =
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "0.0.0.0" ||
+    hostname === "::1" ||
+    hostname.endsWith(".local") ||
+    hostname.endsWith(".internal");
+
+  const isPrivateIp =
+    /^10\./.test(hostname) ||
+    /^192\.168\./.test(hostname) ||
+    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
+    /^169\.254\./.test(hostname);
+
+  if (isLocalhost || isPrivateIp || !hostname.includes(".")) {
+    throw new Error("Invalid target host. URL must be a public web service or API domain.");
+  }
+
   let isRender = isRenderDomain;
   let isHtml = false;
   let canIframe = false;
@@ -73,20 +93,16 @@ async function verifyRenderUrl(url) {
     }
   } catch (err) {
     latencyMs = Date.now() - startTime;
-    if (isRenderDomain) {
-      // It's a valid .onrender.com domain, but cold-starting or took >6s
+    // Known cold-starting domains or slow start during pre-flight
+    const isColdStarting = isRenderDomain || hostname.endsWith(".koyeb.app") || hostname.endsWith(".glitch.me") || hostname.endsWith(".hf.space") || err.name === "AbortError";
+    if (isColdStarting) {
       isWaking = true;
     } else {
-      throw new Error("Could not reach service or verify host.");
+      throw new Error(`Could not reach target service (${err.message}). Please verify the URL is public and live.`);
     }
   }
 
-  if (!isRender) {
-    throw new Error(
-      "URL does not appear to be a Render service (must end in .onrender.com or return a Render header)."
-    );
-  }
-
+// Supports Render, Koyeb, Glitch, Hugging Face, custom domains, and generic cloud APIs
   return {
     isRender,
     isHtml,

@@ -1,6 +1,6 @@
 # Render Alive ⚡
 
-> An automated, open-source 24/7 keep-alive daemon specifically tuned for free Render web services. Stop waiting 50+ seconds for inactive instances to spin up.
+> An automated, open-source 24/7 keep-alive daemon specifically tuned for free cloud web services and APIs. Keep your **Render, Koyeb, Glitch, Hugging Face Spaces, and custom domain** instances awake around the clock—eliminating 50+ second cold-start delays.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PTBYSR/render-alive)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
@@ -10,50 +10,70 @@
 
 ---
 
-## 🌐 Live Demo
+## 🌐 Live Application
 
-👉 **Try it live:** [https://render-alive-4xb9.vercel.app](https://render-alive-4xb9.vercel.app)
+👉 **Try it live:** [https://render-alive-three.vercel.app](https://render-alive-three.vercel.app)
 
 ---
 
 ## 💡 The Problem
 
-Render's free tier is one of the best free hosting solutions for full-stack apps and APIs. However, free Web Services automatically **spin down after 15 minutes of inactivity**. 
+Modern free cloud hosting platforms (**Render**, **Koyeb**, **Glitch**, **Hugging Face Spaces**) provide generous compute tiers for full-stack apps and background APIs. However, they enforce aggressive **inactivity timeouts** (e.g., spinning down after 15 minutes of zero traffic).
 
-When a user or client visits your app again, it takes **50 to 90 seconds** to perform a cold start. Furthermore, generic uptime monitors like UptimeRobot often fail on Render due to:
-1. Strict bot / header detection
-2. 5-second HTTP request timeouts that abort during a Render cold start
-3. Inability to distinguish between waking states and real downtime
+When users or API clients visit a sleeping app, it triggers a painful **50 to 90-second cold start delay**. Generic uptime monitors (like UptimeRobot) frequently fail because:
+1. Strict bot and user-agent filters block generic health probes
+2. Rigid 5-second request timeouts abort prematurely while a sleeping container is booting
+3. They fail to handle custom ping cadences aligned with provider spin-down windows
 
-**Render Alive** was built specifically to solve this problem:
-* Sends authenticated, realistic HTTP GET requests with custom User-Agents
-* Employs adaptive 15-second timeouts to allow cold starts to finish
-* Automatically schedules next pings in Upstash Redis with 1-minute precision
+**Render Alive** solves this permanently:
+* **Multi-Platform Support**: Tuned for `.onrender.com`, `.koyeb.app`, `.glitch.me`, `.hf.space`, and custom domains.
+* **Cold-Start Resilient**: Employs adaptive 15-second probe timeouts allowing waking instances ample time to initialize.
+* **Realistic Edge User-Agents**: Transparent browser-like HTTP GET/HEAD requests that prevent bot blocking.
+* **Precision Queue Scheduling**: Upstash Redis sorted sets dispatch pings with 10-second precision.
 
 ---
 
 ## ✨ Features
 
-- **⚡ 24/7 Keep-Alive Daemon**: Keeps your `.onrender.com` applications active around the clock with zero spin-down.
-- **🛡️ 3 Monitored Slots Per Account**: Add up to 3 web services or APIs per registered account.
-- **⏱️ Flexible Ping Intervals**: Choose between 5 min, 10 min, 14 min, 20 min, or 30 min intervals.
-- **🔍 Render Pre-flight Verification**: Automatically validates that target domains belong to Render (`.onrender.com` or `rndr-id` / `server: render` headers).
-- **🖥️ Live Website Preview**: Built-in responsive iframe preview for verified HTML web apps.
+- **⚡ 24/7 Keep-Alive Daemon**: Keeps your web applications and API workers awake 24/7 with zero spin-down.
+- **🌐 Multi-Cloud & Custom Domains**: Supports Render, Koyeb, Glitch, Hugging Face Spaces, Fly.io, and custom domain backends.
+- **🛡️ 3 Monitored Slots Per Account**: Add up to 3 separate web services or APIs per registered user.
+- **⏱️ Flexible Ping Intervals**: Choose between 5 min, 10 min, 14 min (recommended for Render), 20 min, or 30 min intervals.
+- **🔒 SSRF Protection & Pre-Flight Validation**: Validates public reachability while rejecting internal/private IP ranges.
+- **🖥️ Live Website Preview**: Built-in responsive iframe preview for verified HTML web applications.
 - **📊 Real-Time Telemetry**: Live ping latency in milliseconds, HTTP response codes, and next-ping countdown timers.
-- **🔐 Multi-Provider Authentication**: Auth.js (NextAuth v5) supporting **Google OAuth** and **Email / Password** credentials.
+- **🔐 Multi-Provider Authentication**: Auth.js (NextAuth v5) supporting **Google OAuth** and **Email / Password** auto-registration.
 - **👑 Protected Admin Dashboard**: High-level telemetry inspector at `/admin` protected by `ADMIN_SECRET`.
 - **🎨 Monochrome Japanese Aesthetic**: Clean, distraction-free typography with dark mode accents and full mobile responsiveness.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ Architecture
 
-- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
-- **Database**: [Upstash Redis](https://upstash.com/) (Serverless REST Redis)
-- **Authentication**: [Auth.js v5](https://authjs.dev/) (NextAuth with JWT session strategy)
-- **Styling**: Vanilla CSS design system (Monochrome aesthetic, responsive grid, zero external CSS bloat)
-- **Hosting**: [Vercel](https://vercel.com/)
-- **Cron Trigger**: [cron-job.org](https://cron-job.org) (100% free external cron dispatch)
+```
++------------------------------------+
+|    Render Alive Web Frontend       |
+|    (Next.js 16 on Vercel)          |  <--- User Dashboard, Auth, URLs
++-----------------+------------------+
+                  |
+                  v
++------------------------------------+
+|      Shared Database Layer         |
+|      (Upstash Redis REST)          |  <--- Stores users, URLs & due_pings queue
++-----------------+------------------+
+                  ^
+                  |
++-----------------+------------------+
+|    High-Performance Pinger Engine   |
+|    (Dedicated VPS Daemon)          |  <--- 24/7 background worker, 15s timeout
++-----------------+------------------+
+                  |
+                  v  (HTTP GET keep-alive requests)
++-------------------------------------------------------+
+|  Target Services (Render, Koyeb, Glitch, Custom APIs) |
+|  Eliminates 15-min idle spin-down & cold starts       |
++-------------------------------------------------------+
+```
 
 ---
 
@@ -103,21 +123,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 2. In the Vercel dashboard, populate the environment variables from your `.env.local`.
 
-3. Configure your free 1-minute external cron trigger on [cron-job.org](https://cron-job.org):
-   * **URL:** `https://<your-project>.vercel.app/api/cron?secret=<your-cron-secret>`
-   * **Schedule:** Every 1 minute (or 2 minutes)
-
 ---
 
 ## 🤝 Contributing
 
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/PTBYSR/render-alive/issues).
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ---
 

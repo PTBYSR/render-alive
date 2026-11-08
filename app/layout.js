@@ -4,11 +4,11 @@ import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: {
-    default: "Render Alive — Keep Render Free Tier Running 24/7 (Fix Spin-Down)",
+    default: "Render Alive — 24/7 Keep-Alive Daemon for Render, Koyeb & Cloud Services",
     template: "%s | Render Alive",
   },
   description:
-    "Fix Render free-tier downtime and 50s cold starts. Automated keep-alive edge pings prevent Render web services from sleeping after 15 minutes of inactivity. Free & open-source.",
+    "Stop free-tier downtime and 50s cold starts. Automated 24/7 keep-alive pings keep Render, Koyeb, Glitch, and cloud web services awake around the clock. Free & open-source.",
   keywords: [
     "render free tier",
     "render free tier sleep fix",
@@ -34,7 +34,7 @@ export const metadata = {
   authors: [{ name: "ptbthefirst", url: "https://x.com/ptbthefirst" }],
   creator: "ptbthefirst",
   publisher: "Render Alive",
-  metadataBase: new URL("https://render-alive-4xb9.vercel.app"),
+  metadataBase: new URL("https://render-alive-three.vercel.app"),
   alternates: {
     canonical: "/",
   },
@@ -52,8 +52,8 @@ export const metadata = {
   openGraph: {
     title: "Render Alive — Keep Render Free Tier Running 24/7 (Fix Spin-Down)",
     description:
-      "Fix Render free-tier downtime and 50s cold starts. Automated keep-alive edge pings prevent Render web services from sleeping after 15 minutes of inactivity. Free & open-source.",
-    url: "https://render-alive-4xb9.vercel.app",
+      "Stop free-tier downtime and 50s cold starts. Automated 24/7 keep-alive pings keep Render, Koyeb, Glitch, and cloud web services awake around the clock. Free & open-source.",
+    url: "https://render-alive-three.vercel.app",
     siteName: "Render Alive",
     locale: "en_US",
     type: "website",
@@ -81,8 +81,8 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://render-alive-4xb9.vercel.app/#website",
-      "url": "https://render-alive-4xb9.vercel.app",
+      "@id": "https://render-alive-three.vercel.app/#website",
+      "url": "https://render-alive-three.vercel.app",
       "name": "Render Alive",
       "description": "Keep Render free tier web services awake 24/7 and eliminate 50-second cold starts.",
       "publisher": {
@@ -93,9 +93,9 @@ const jsonLd = {
     },
     {
       "@type": "SoftwareApplication",
-      "@id": "https://render-alive-4xb9.vercel.app/#webapp",
+      "@id": "https://render-alive-three.vercel.app/#webapp",
       "name": "Render Alive",
-      "url": "https://render-alive-4xb9.vercel.app",
+      "url": "https://render-alive-three.vercel.app",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "All",
       "description":
@@ -120,7 +120,7 @@ const jsonLd = {
     },
     {
       "@type": "HowTo",
-      "@id": "https://render-alive-4xb9.vercel.app/#howto",
+      "@id": "https://render-alive-three.vercel.app/#howto",
       "name": "How to Prevent Render Free-Tier Web Services from Sleeping",
       "description": "Step-by-step guide to stop Render.com free instances from spinning down after 15 minutes of inactivity.",
       "step": [
@@ -143,7 +143,7 @@ const jsonLd = {
     },
     {
       "@type": "FAQPage",
-      "@id": "https://render-alive-4xb9.vercel.app/#faq",
+      "@id": "https://render-alive-three.vercel.app/#faq",
       "mainEntity": [
         {
           "@type": "Question",
