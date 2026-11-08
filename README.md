@@ -1,6 +1,6 @@
 # Render Alive ⚡
 
-> An automated, open-source 24/7 keep-alive daemon specifically tuned for free cloud web services and APIs. Keep your **Render, Koyeb, Glitch, Hugging Face Spaces, and custom domain** instances awake around the clock—eliminating 50+ second cold-start delays.
+> Keep free cloud services awake 24/7 for free. The UptimeRobot alternative that actually works. Automated keep-alive pings prevent idle spin-down and 50s cold starts across **Render, Koyeb, Glitch, Hugging Face Spaces, and custom domain APIs**.
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PTBYSR/render-alive)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)

@@ -385,10 +385,10 @@ export default function Home() {
         <section className="landing-hero">
           <div className="landing-hero__badge">// ZERO COLD STARTS • 24/7 CLOUD KEEP-ALIVE</div>
           <h1 className="landing-hero__title">
-            Keep free cloud services awake 24/7.
+            Keep free cloud services awake 24/7 for free.
           </h1>
           <p className="landing-hero__subtitle">
-            Stop idle spin-down and 50+ second cold starts. Automated keep-alive pings maintain container warmth across Render, Koyeb, Glitch, and custom domain APIs.
+            The UptimeRobot alternative that actually works. Automated keep-alive pings prevent idle spin-downs and 50s cold starts across Render, Koyeb, Glitch, and custom domain APIs.
           </p>
           <div className="landing-hero__actions">
             <button

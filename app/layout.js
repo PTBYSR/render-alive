@@ -4,11 +4,11 @@ import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: {
-    default: "Render Alive — 24/7 Keep-Alive Daemon for Render, Koyeb & Cloud Services",
+    default: "Render Alive — Keep Free Cloud Services Awake 24/7 for Free",
     template: "%s | Render Alive",
   },
   description:
-    "Stop free-tier downtime and 50s cold starts. Automated 24/7 keep-alive pings keep Render, Koyeb, Glitch, and cloud web services awake around the clock. Free & open-source.",
+    "The UptimeRobot alternative that actually works. Keep free cloud services awake 24/7 for free across Render, Koyeb, Glitch, and custom domain APIs.",
   keywords: [
     "render free tier",
     "render free tier sleep fix",
@@ -52,7 +52,7 @@ export const metadata = {
   openGraph: {
     title: "Render Alive — Keep Render Free Tier Running 24/7 (Fix Spin-Down)",
     description:
-      "Stop free-tier downtime and 50s cold starts. Automated 24/7 keep-alive pings keep Render, Koyeb, Glitch, and cloud web services awake around the clock. Free & open-source.",
+      "The UptimeRobot alternative that actually works. Keep free cloud services awake 24/7 for free across Render, Koyeb, Glitch, and custom domain APIs.",
     url: "https://render-alive-three.vercel.app",
     siteName: "Render Alive",
     locale: "en_US",
