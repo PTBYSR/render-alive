@@ -383,35 +383,35 @@ export default function Home() {
       {/* Guest: Landing Page Hero | Authenticated: Session Service Panel Header */}
       {!session?.user ? (
         <section className="landing-hero">
-          <div className="landing-hero__badge">// 24/7 CLOUD KEEP-ALIVE DAEMON • RENDER, KOYEB, GLITCH & MORE</div>
+          <div className="landing-hero__badge">// ZERO COLD STARTS • 24/7 CLOUD KEEP-ALIVE</div>
           <h1 className="landing-hero__title">
-            Keep your free web services & APIs awake 24/7.
+            Keep free cloud services awake 24/7.
           </h1>
           <p className="landing-hero__subtitle">
-            Stop free-tier downtime and 50+ second cold starts. Automated keep-alive edge pings prevent Render, Koyeb, Glitch, and custom domain web services from sleeping after inactivity.
+            Stop idle spin-down and 50+ second cold starts. Automated keep-alive pings maintain container warmth across Render, Koyeb, Glitch, and custom domain APIs.
           </p>
           <div className="landing-hero__actions">
             <button
               type="button"
-              className="btn"
+              className="btn btn--primary"
               onClick={() => setShowAuthModal(true)}
-              style={{ padding: "9px 18px", display: "inline-flex", alignItems: "center" }}
+              style={{ padding: "10px 22px", display: "inline-flex", alignItems: "center" }}
             >
-              Start Monitoring →
+              Start Monitoring Free →
             </button>
           </div>
           <div className="landing-hero__metrics">
             <div className="landing-hero__metric">
               <span className="landing-hero__metric-value">0s</span>
-              <span className="landing-hero__metric-label">Cold-start lag</span>
+              <span className="landing-hero__metric-label">Cold-start latency</span>
             </div>
             <div className="landing-hero__metric">
               <span className="landing-hero__metric-value">3</span>
-              <span className="landing-hero__metric-label">Free monitor slots</span>
+              <span className="landing-hero__metric-label">Free slots per user</span>
             </div>
             <div className="landing-hero__metric">
-              <span className="landing-hero__metric-value">1-Min</span>
-              <span className="landing-hero__metric-label">Cron resolution</span>
+              <span className="landing-hero__metric-value">10s</span>
+              <span className="landing-hero__metric-label">Daemon poll precision</span>
             </div>
           </div>
         </section>
@@ -512,159 +512,96 @@ export default function Home() {
           </>
         ) : (
           <>
-            <div className="auth-gate">
-              <div className="auth-gate__badge">// ACCOUNT REQUIRED</div>
-              <h3 className="auth-gate__title">Sign In to Monitor Your Web Services</h3>
-              <p className="auth-gate__description">
-                Free-tier instances on Render, Koyeb, Glitch, and cloud hosts spin down after inactivity. Create an account to unlock 3 keep-alive slots, set customized ping intervals, and keep your applications responsive 24/7.
-              </p>
-              <div className="auth-gate__actions">
-                <button
-                  type="button"
-                  className="btn btn--primary"
-                  onClick={() => setShowAuthModal(true)}
-                >
-                  Sign In / Create Account →
-                </button>
-              </div>
-              <div className="auth-gate__features">
-                <div className="auth-gate__feature">✓ 3 Free Monitored Web Services</div>
-                <div className="auth-gate__feature">✓ Automated 24/7 Edge Pings</div>
-                <div className="auth-gate__feature">✓ Real-Time Latency & Health Checks</div>
-              </div>
-            </div>
-
-            {/* SEO Guide: Fixing Render Free Tier Downtime */}
-            <section className="seo-guide" aria-labelledby="seo-guide-title">
-              <div className="seo-guide__badge">// FIX RENDER FREE TIER SPIN-DOWN</div>
-              <h2 id="seo-guide-title" className="seo-guide__title">
-                How to stop Render free-tier web services from sleeping
+            {/* Minimal How It Works */}
+            <section className="seo-guide" aria-labelledby="guide-title" style={{ marginTop: '0', paddingTop: '0' }}>
+              <div className="seo-guide__badge">// HOW IT WORKS</div>
+              <h2 id="guide-title" className="seo-guide__title">
+                Three steps to zero downtime.
               </h2>
-              <p className="seo-guide__intro">
-                Render’s free tier is an ideal cloud platform for deploying modern web applications and APIs.
-                However, free instances automatically go to sleep after 15 minutes of inactivity.
-                Here is why Render spins down and how Render Alive completely eliminates cold starts.
+              <p className="seo-guide__intro" style={{ marginBottom: '28px' }}>
+                Free tiers spin down containers after 15 minutes of zero inbound traffic. Render Alive resets the clock continuously.
               </p>
 
               <div className="seo-guide__grid">
                 <div className="seo-card">
                   <div className="seo-card__step">01</div>
-                  <h3 className="seo-card__title">The 15-Minute Sleep Timer</h3>
+                  <h3 className="seo-card__title">Connect Target</h3>
                   <p className="seo-card__text">
-                    Render monitors incoming HTTP traffic. If no web requests hit your service for 15 minutes, Render shuts down the container to save memory and CPU on their host nodes.
+                    Add your .onrender.com, .koyeb.app, .glitch.me, .hf.space, or custom API URL with instant pre-flight validation.
                   </p>
                 </div>
 
                 <div className="seo-card">
                   <div className="seo-card__step">02</div>
-                  <h3 className="seo-card__title">The 50s Cold Start Delay</h3>
+                  <h3 className="seo-card__title">Set Interval</h3>
                   <p className="seo-card__text">
-                    When a real user or API request reaches a sleeping service, Render has to re-provision the container, causing an agonizing 50 to 90-second loading freeze.
+                    Choose ping cadences from 5 to 30 minutes to trigger inbound HTTP traffic before container idle timers elapse.
                   </p>
                 </div>
 
                 <div className="seo-card">
                   <div className="seo-card__step">03</div>
-                  <h3 className="seo-card__title">Automated Edge Keep-Alive</h3>
+                  <h3 className="seo-card__title">Stay Awake</h3>
                   <p className="seo-card__text">
-                    Render Alive issues scheduled, lightweight keep-alive pings every 14 minutes. This resets Render’s inactivity timer right before it triggers, ensuring zero cold-start lag.
+                    Dedicated 24/7 background daemons ping endpoints with 15-second cold-start timeouts and live telemetry.
                   </p>
                 </div>
               </div>
-
-              <div className="seo-quota-box">
-                <div className="seo-quota-box__header">
-                  <span className="seo-quota-box__badge">// QUOTA CALCULATION</span>
-                  <h3 className="seo-quota-box__title">Will 24/7 keep-alive exhaust my Render free tier quota?</h3>
-                </div>
-                <p className="seo-quota-box__text">
-                  <strong>No.</strong> Render provides <strong>750 free instance hours</strong> per month for each account. A full 31-day month has exactly <strong>744 hours</strong> (31 × 24 = 744).
-                  Keeping one free web service running 24/7 consumes 744 hours, leaving 6 spare hours every single month without paying a dime.
-                </p>
-              </div>
             </section>
 
-            {/* SEO FAQ Section */}
-            <section className="seo-faq" aria-labelledby="seo-faq-title">
+            {/* Succinct FAQ */}
+            <section className="seo-faq" aria-labelledby="faq-title" style={{ marginTop: '36px' }}>
               <div className="seo-faq__badge">// FREQUENTLY ASKED QUESTIONS</div>
-              <h2 id="seo-faq-title" className="seo-faq__title">
-                Keep-Alive & Free Tier Uptime FAQ
+              <h2 id="faq-title" className="seo-faq__title">
+                Frequently Asked Questions
               </h2>
 
               <div className="seo-faq__list">
-                                <details className="seo-faq__item" open>
+                <details className="seo-faq__item" open>
                   <summary className="seo-faq__question">
-                    Does Render Alive support other platforms like Koyeb, Glitch, or custom domains?
+                    Does Render Alive support services beyond Render?
                   </summary>
                   <div className="seo-faq__answer">
-                    Yes! While originally built for Render, Render Alive actively keeps alive web services and APIs across Render, Koyeb (.koyeb.app), Glitch (.glitch.me), Hugging Face Spaces (.hf.space), Fly.io, and custom domain backends. Any public HTTPS service with an inactivity timeout can be monitored.
+                    Yes. Render Alive actively keeps alive web services and APIs across Render (.onrender.com), Koyeb (.koyeb.app), Glitch (.glitch.me), Hugging Face Spaces (.hf.space), Fly.io, and any public HTTPS URL or custom domain.
                   </div>
                 </details>
 
                 <details className="seo-faq__item">
                   <summary className="seo-faq__question">
-                    Why do Render free web services go down or turn off?
+                    Will 24/7 keep-alive exhaust my Render free tier quota?
                   </summary>
                   <div className="seo-faq__answer">
-                    Render’s free-tier infrastructure is shared. To conserve compute resources, Render automatically idles (spins down) any web service that has received zero inbound HTTP requests during a 15-minute window.
+                    No. Render provides 750 free instance hours per month. A 31-day month is 744 hours (31 × 24). Running one free web service 24/7 uses 744 hours, leaving 6 spare hours every month.
                   </div>
                 </details>
 
                 <details className="seo-faq__item">
                   <summary className="seo-faq__question">
-                    How does Render Alive keep my service awake?
+                    How does it eliminate cold starts?
                   </summary>
                   <div className="seo-faq__answer">
-                    Render Alive acts as an automated 24/7 ping monitor. It executes scheduled GET or HEAD requests across globally distributed edge nodes to your service URL at regular intervals (such as every 14 minutes), keeping the container continuously active.
-                  </div>
-                </details>
-
-                <details className="seo-faq__item">
-                  <summary className="seo-faq__question">
-                    Why is 14 minutes the recommended keep-alive interval?
-                  </summary>
-                  <div className="seo-faq__answer">
-                    Render’s inactivity threshold is 15 minutes. Pinging every 14 minutes resets the countdown just in time while consuming minimal bandwidth and preventing unnecessary request spam.
-                  </div>
-                </details>
-
-                <details className="seo-faq__item">
-                  <summary className="seo-faq__question">
-                    Why not just use generic tools like UptimeRobot?
-                  </summary>
-                  <div className="seo-faq__answer">
-                    Generic uptime monitors often face rate-limits, require intricate custom headers, or operate on fixed intervals that don't align with Render's 15-minute cycle. Render Alive was designed specifically for Render developers with instant one-click activation, latency graphs, and zero configuration.
-                  </div>
-                </details>
-
-                                <details className="seo-faq__item">
-                  <summary className="seo-faq__question">
-                    Why do internal timers (setInterval) in Node.js or Python fail on Render?
-                  </summary>
-                  <div className="seo-faq__answer">
-                    When Render suspends an idle container after 15 minutes, the hypervisor freezes the Linux container process entirely. Internal timers stop executing. Only external inbound HTTP requests from an edge monitor like Render Alive can wake or keep the service active.
-                  </div>
-                </details>
-
-                <details className="seo-faq__item">
-                  <summary className="seo-faq__question">
-                    Is using a keep-alive monitor permitted on Render free tier?
-                  </summary>
-                  <div className="seo-faq__answer">
-                    Yes. Lightweight HTTP health pings to your own public application are standard web traffic. As long as your total running time stays within your 750 monthly free instance hours, your service remains fully compliant with Render platform usage.
-                  </div>
-                </details>
-
-                <details className="seo-faq__item">
-                  <summary className="seo-faq__question">
-                    Is Render Alive free and open-source?
-                  </summary>
-                  <div className="seo-faq__answer">
-                    Yes. Render Alive is completely free, offering 3 free monitoring slots per user. The project is fully open-source on GitHub under the MIT license.
+                    By issuing lightweight HTTP GET requests before the provider's 15-minute inactivity window elapses. This keeps the container active in memory and avoids the 50–90 second boot penalty.
                   </div>
                 </details>
               </div>
             </section>
+
+            {/* Minimal Bottom CTA */}
+            <div className="auth-gate" style={{ marginTop: '40px', padding: '28px 24px', textAlign: 'center' }}>
+              <h3 className="auth-gate__title" style={{ fontSize: '18px', marginBottom: '8px' }}>
+                Ready to eliminate cold starts?
+              </h3>
+              <p className="auth-gate__description" style={{ marginBottom: '18px', maxWidth: '480px', marginInline: 'auto' }}>
+                Join active developers keeping their apps responsive. 3 free slots with instant setup.
+              </p>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => setShowAuthModal(true)}
+              >
+                Create Free Account →
+              </button>
+            </div>
           </>
         )}
       </div>
