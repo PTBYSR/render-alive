@@ -10,6 +10,12 @@
 
 ---
 
+## 📽️ Demo Preview
+
+https://github.com/PTBYSR/render-alive/raw/main/public/demo.mp4
+
+---
+
 ## 🌐 Live Application
 
 👉 **Try it live:** [https://render-alive-three.vercel.app](https://render-alive-three.vercel.app)
