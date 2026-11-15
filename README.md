@@ -12,7 +12,9 @@
 
 ## 📽️ Demo Preview
 
-https://github.com/PTBYSR/render-alive/raw/main/public/demo.mp4
+<p align="center">
+  <img src="public/demo.gif" alt="Render Alive Demo Preview" width="100%" style="border-radius: 8px;" />
+</p>
 
 ---
 
