@@ -2,7 +2,7 @@
 
 > Keep free cloud services awake 24/7 for free. The UptimeRobot alternative that actually works. Automated keep-alive pings prevent idle spin-down and 50s cold starts across **Render, Koyeb, Glitch, Hugging Face Spaces, and custom domain APIs**.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PTBYSR/render-alive)
+[![Live App](https://img.shields.io/badge/Live%20App-render--alive--three.vercel.app-blue)](https://render-alive-three.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16%20(Turbopack)-black.svg)](https://nextjs.org/)
 [![Upstash Redis](https://img.shields.io/badge/Upstash-Redis-00E599.svg)](https://upstash.com/)
@@ -77,20 +77,38 @@ When users or API clients visit a sleeping app, it triggers a painful **50 to 90
 
 ---
 
-## 🚀 Quick Start (Local Development)
+## 🚀 Getting Started
+
+> [!IMPORTANT]
+> ### 👉 Use the Live Hosted Service (Strongly Recommended)
+> **You do NOT need to clone or self-host this project.** We strongly recommend simply using the free hosted instance:
+> 
+> 🌐 **[https://render-alive-three.vercel.app](https://render-alive-three.vercel.app)**
+> 
+> **Why?**  
+> Render Alive’s keep-alive engine relies on an offloaded, high-performance background daemon running 24/7 on a dedicated **Oracle Cloud Free-Tier Linux VPS** (`systemd`) synchronized with Upstash Redis queues. 
+> 
+> Cloning and self-hosting requires provisioning, configuring, and maintaining an always-on VPS server, SSH tunneling, systemd daemon files, and firewall rules—which is complex and tedious.
+> 
+> The hosted version is **100% free**, already fully configured on our 24/7 infrastructure, and provides **3 free keep-alive slots** instantly with zero setup.
+
+---
+
+## 🛠️ Self-Hosting & Local Development (Advanced)
+
+If you are contributing or genuinely want to run your own private infrastructure, you will need:
+1. A Next.js 16 host (e.g. Vercel)
+2. An [Upstash Redis](https://upstash.com/) database
+3. A dedicated Linux VPS (e.g., Oracle Cloud Free Tier) running the `render_alive_pinger.py` background daemon 24/7
 
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/PTBYSR/render-alive.git
 cd render-alive
-```
-
-### 2. Install dependencies
-```bash
 npm install
 ```
 
-### 3. Configure environment variables
+### 2. Configure environment variables
 Copy `.env.example` to `.env.local`:
 ```bash
 cp .env.example .env.local
@@ -106,22 +124,13 @@ AUTH_SECRET="your-32-char-auth-secret"
 NEXTAUTH_URL="http://localhost:3000"
 ```
 
-### 4. Run the development server
+### 3. Run the development server
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## ☁️ 1-Click Deployment (Vercel)
-
-1. Click the button below to deploy your own instance to Vercel:
-   
-   [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/PTBYSR/render-alive)
-
-2. In the Vercel dashboard, populate the environment variables from your `.env.local`.
+### 4. Background Pinger Daemon (Oracle VPS)
+The background daemon script (`render_alive_pinger.py`) must be deployed to your persistent Linux VPS and managed via `systemd` to poll the Upstash Redis `due_pings` queue every 10 seconds.
 
 ---
 
